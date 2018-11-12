@@ -276,12 +276,11 @@ function KedamaMap() {
 	
 
 window.onload = function() {
-	
-	
-	var map_dialog = function(htmlElement, title) {
+
+	var map_dialog = function(map, htmlElement, title) {
 		if(!title)
 			title = 'Dialog'
-		let _container = L.DomUtil.create('div', 'leaflet-control-container leaflet-bar leaflet-top dialog', this.map._container);
+		let _container = L.DomUtil.create('div', 'leaflet-control-container leaflet-bar leaflet-top dialog', map._container);
 		let _close = L.DomUtil.create('input', 'close leaflet-right', _container);
 		_close.value = 'X';
 		_close.type = 'button';
@@ -297,13 +296,16 @@ window.onload = function() {
 		return _container;
 	}
 	
+	var mapUtil = new MinecraftMapUtil();
 	
-	map = L.map('map', {
+	var mgr = new MinecraftMapManager(mapUtil);
+	
+	var map = L.map('map', {
 		renderer: L.canvas({ padding: 0.01 }),
 		zoomSnap: 0.05,
 		zoomDelta: 0.25,
 		closePopupOnClick: true
-	}).setView([0,0], 2);
+	}).setView([0,0],0);
 	
 	//common layer: ControlLayer
 	var layerControl = L.control.layers({}, {}).addTo(map);
@@ -311,7 +313,58 @@ window.onload = function() {
 	//common layer: ScaleControl
 	var scaleControl = mapUtil.ScaleControl({
 		maxWidth: 100
-	}).addTo(this.map);
+	}).addTo(map);
+	
+	
+	
+	if(!mapUtil.getFragment())
+		mapUtil.setFragment('v3');
+	
+	mgr.registerMap(
+		"v2",
+		'../data/v2/v2.json',
+		'../data/{world}/{z}/{x},{y}.png',
+		layerControl,
+		mapUtil.getFragment() == 'v2',
+		function(e) {
+			
+		},
+	);
+	
+	mgr.registerMap(
+		"v3",
+		'../data/v3/v3.json',
+		'../data/{world}/{z}/{x},{y}.png',
+		layerControl,
+		mapUtil.getFragment() == 'v3',
+		function(e) {
+			
+		},
+	);
+	
+	
+	
+	//hmmmm to reuse some functions
+	var u = {
+		searchMarks: function(keyword) {
+			var res = [];
+			var staticMarkers = mgr.getCurrentDataStruct().data.markers;
+				for(let i = 0;i < staticMarkers.length; i++) {
+					if(staticMarkers[i].title.indexOf(keyword) != -1) {
+						res.push({
+							name: staticMarkers[i].title,
+							x: staticMarkers[i].x,
+							z: staticMarkers[i].z
+						});
+					}
+				}
+			return res;
+		},
+		setView: function(x, z) {
+			map.setView([z, x], map.getMaxZoom());
+		}
+	};
+	
 	
 	//common layer: MenuControl
 	var menuControl = mapUtil.MenuControl({
@@ -325,16 +378,19 @@ window.onload = function() {
 					+ '<tr><td>鼠标左键</td><td>显示/隐藏提示、放置/取消放置标记点</td></tr>'
 					+ '<tr><td>Menu-Search</td><td>搜索标记点，可根据搜索结果索引跳转</td></tr>'
 					+ '</table>';
-				map_dialog(dom, 'Tips');
+				map_dialog(map, dom, 'Tips');
 			},
 			"Marking": function (e) {
-				if(map['minecraft-map-group']) {
-					if (map['minecraft-map-group'].state.mark) {
-						map['minecraft-map-group'].state.mark = undefined;
+				var userMarkersLayer = mgr.getCurrentDataStruct().overlayers['user-marker'];
+				if(userMarkersLayer) {
+					if (userMarkersLayer.addMarkerflag) {
+						map.off('click', userMarkersLayer.addMarker)
+						userMarkersLayer.addMarkerflag = undefined;
 						e.target.style.backgroundColor = "";
 					} else {
-						map['minecraft-map-group'].state.mark = 1;
 						e.target.style.backgroundColor = "#AFD";
+						setTimeout(function(){userMarkersLayer.addMarkerflag = true;}, 10); 
+						map.on('click', userMarkersLayer.addMarker);
 					}
 				}
 			},
@@ -365,7 +421,7 @@ window.onload = function() {
 				else {
 					alert('请输入关键词!');
 				}*/
-				map_dialog(searchDialog(map), 'Search');
+				map_dialog(map, searchDialog(u), 'Search');
 			},
 			"About": function () {
 				alert('推荐功能更完善的地图版本\n[jsw YAKM](https://kedama-map.jsw3286.eu.org/v2/#4800,0,0)');
@@ -373,7 +429,7 @@ window.onload = function() {
 				var p = document.createElement("p");
 				var warn = document.createTextNode("此条目正在开发中...");
 				cet.appendChild(warn);
-				map_dialog(cet, 'About');
+				map_dialog(map, cet, 'About');
 			}
 		}
 	}).addTo(map);
@@ -383,7 +439,11 @@ window.onload = function() {
 		document.getElementById('debug').innerHTML = mapUtil.pointerFormatter(event.latlng);
 	});
 	
+	map.on('baselayerchange', function(event) {
+		mgr.onChangeBaselayers(event, layerControl);
+	});
 	
+	/*
 	var mapGroup = {
 		v2: new MinecraftMapGroup(
 			map,
@@ -429,7 +489,7 @@ window.onload = function() {
 				}
 			}
 		),
-	}
+	}*/
 }
 
 /*window.onload*/ var unuse = function () {
@@ -501,7 +561,8 @@ window.onload = function() {
 				else {
 					alert('请输入关键词!');
 				}*/
-				map.dialog(searchDialog(map), 'Search');
+				
+				map.dialog(searchDialog(u), 'Search');
 			},
 			"About": function () {
 				alert('推荐功能更完善的地图版本\n[jsw YAKM](https://kedama-map.jsw3286.eu.org/v2/#4800,0,0)');
@@ -517,6 +578,7 @@ window.onload = function() {
 
 }
 
+/*it works. why?*/
 function searchDialog(map) {
 	let dom = document.createElement("div");
 	dom.className = "search-dialog-body"
