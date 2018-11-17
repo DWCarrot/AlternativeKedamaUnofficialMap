@@ -1,6 +1,8 @@
 
 # temp files
 *-tmp.*
+README.html
+tools/NoCrossHair3.zip
 
 # visual studio profiles
 *.vs

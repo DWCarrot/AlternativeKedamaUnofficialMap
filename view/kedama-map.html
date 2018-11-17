@@ -26,14 +26,14 @@
     <script src="kedama-map.js"></script>
 	
 	<div id="template-popup-01" hidden="hidden">
-		<div>{title}</div>
+		<div style="font-weight:bold;">{title}</div>
 	</div>
 	<div id="template-popup-02" hidden="hidden">
-		<div style="font-size: smaller">{x},{z}</div>
+		<div style="font-size:smaller;">{x},{z}</div>
 	</div>
 	<div id="template-popup-03" hidden="hidden">
 		<hr/>
-		<div style="font-size: smaller">{description}</div>
+		<div style="max-width: 150px; word-wrap:break-word; word-break:break-all;" >{description}</div>
 	</div>
 	<div id="template-pointer" hidden="hidden">
 		指向坐标: {x},{z}

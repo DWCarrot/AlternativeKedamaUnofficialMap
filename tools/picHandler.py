@@ -104,6 +104,12 @@ def split(img, path, nx, ny):
         cv2.imwrite(fname, part)
     return
 
+def findCorner(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    th,gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    gray = numpy.float32(gray)
+    
+
 def main():
     img = None
     pic = None

@@ -2,11 +2,18 @@
 
 Alternative plan for repo [SilentDepth/KedamaMC-Unofficial-Map](https://github.com/SilentDepth/KedamaMC-Unofficial-Map), using leaflet for display and python-openCV for processing
 
-[毛玉線圈物語 Sunshine (v2) 非官方地图](https://github.com/SilentDepth/KedamaMC-Unofficial-Map) 备用方案，使用leaflet作地图显示，python-openCV处理地图数据
+[毛玉線圈物語 非官方地图](https://bbs.craft.moe/d/10-2-8/204) 备用方案，使用leaflet作地图显示，python-openCV处理地图数据
+
+-----------
+
+### [[github-preview]](https://dwcarrot.github.io/AlternativeKedamaUnofficialMap/view/kedama-map.html)
+
+**[2018/11/12]  加入v3世界地图(scale=1:4 vanilla map);控制台切换世界;可以在URL中使用`#fragment`选择预设世界**                    赞美李德二！
 
 基础图源来自SilentDepth/KedamaMC-Unofficial-Map(赞美鹅叔！)，利用python-openCV进行部分地图更新
 
-### [[github-preview]](https://dwcarrot.github.io/AlternativeKedamaUnofficialMap/view/kedama-map.html)
+[v2](https://dwcarrot.github.io/AlternativeKedamaUnofficialMap/view/kedama-map.html#v2)
+[v3](https://dwcarrot.github.io/AlternativeKedamaUnofficialMap/view/kedama-map.html#v3)
 
 -----------
 
@@ -37,4 +44,20 @@ Alternative plan for repo [SilentDepth/KedamaMC-Unofficial-Map](https://github.c
 
 > 更新：利用python-opencv 的地图更新工具
 >
-> ​	还没写完 ε=ε=ε=(~￣▽￣)~
+> splitMap.py 读取、分割图片
+>
+> picHandler.py 透视变换矫正
+>
+
+-----------
+
+### TODO
+
+- [ ] \#20181112-02 水印(地图标题)
+- [ ] \#20181112-02 标记点
+- [ ] \#20181112-03区块划分线显示
+- [ ] \#20181112-04`MinecraftMapManager.getMapMarkers()`,`MinecraftMapManager.getUserMarkers()`
+- [ ] \#20181112-05 距离测量
+
+
+

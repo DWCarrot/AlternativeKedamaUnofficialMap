@@ -33,7 +33,7 @@ const getAbsURL = function (url) {
 
 var MinecraftMapUtil = function() {
 
-	this.mapIcons = [];
+	this.mapIcons = {};
 
 	this.str2dom = function(html) {
 		var container = document.createElement('div');
@@ -245,7 +245,7 @@ var MinecraftMapUtil = function() {
 		for (var i = 0; i < dataMarkers.length; ++i) {
 			var marker = dataMarkers[i];
 			var options = {};
-			if(marker.icon !== undefined)
+			if(marker.icon !== undefined && this.mapIcons[marker.icon])
 				options.icon = this.mapIcons[marker.icon];
 			markers.push(
 				L.marker([marker.z, marker.x], options)
@@ -264,7 +264,9 @@ var MinecraftMapUtil = function() {
 		layer.addMarker = function(event) {
 			if(layer.addMarkerflag) {
 				var options = {};
-				if(event.markerIcon != undefined)
+				if(event.markerIcon == undefined)
+					event.markerIcon = "pointer";
+				if(event.markerIcon != undefined && that.mapIcons[event.markerIcon])
 					options.icon = that.mapIcons[event.markerIcon];
 				var marker = L.marker(event.latlng, options).bindPopup(
 					that.popupFormatter({
@@ -299,7 +301,7 @@ var MinecraftMapUtil = function() {
 			html += this.template('template-popup-01', {title: marker.title});
 		html += this.template('template-popup-02',{x:marker.x, z:marker.z});
 		if(marker.description)
-			html += this.template('template-popup-03', {description: marker.description});
+			html += this.template('template-popup-03', {description: marker.description.replace(/\n/g, '<br/>')});
 		return html;
 	};
 	

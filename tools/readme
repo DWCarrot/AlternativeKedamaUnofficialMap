@@ -1,0 +1,23 @@
+picHandler
+命令：
+open <file>		example: open E:\.minecraft\screenshot\20181112_15_29.png
+	打开图片
+	Esc关闭图片（右上角的x没用）
+	
+mark			example: mark
+	标记区域：按左上、左下、右上、右下的顺序
+	鼠标滚轮缩放（可能有点不太灵敏）
+	左键标记，右键取消最近一次标记
+	Esc确认并退出
+	
+cal <num>		example: cal 2
+	矫正
+	num表示生成图像的边长是 512*num
+	
+save <file>		example: save E:\data\pic001.png
+	保存矫正完的图片
+	
+split <path> <x> <y>	example: split E:\data\v3\5\ -1 -1
+	以512为边长切割矫正完的图像
+	按jmap编号方式命名，保存在path; 最左上角的图片块命名为<x>,<y>.png,其它以此类推
+	
