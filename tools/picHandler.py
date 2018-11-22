@@ -134,7 +134,7 @@ def main():
             cv2.imwrite(cmd[1], pic)
             continue
         if cmd[0] == 'split':
-            if pic == None:
+            if pic is None:
                 pic = img
             split(pic, cmd[1], int(cmd[2]), int(cmd[3]))
 

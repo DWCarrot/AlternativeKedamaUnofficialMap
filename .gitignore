@@ -3,6 +3,7 @@
 *-tmp.*
 README.html
 tools/NoCrossHair3.zip
+*/__pycache__/*
 
 # visual studio profiles
 *.vs
@@ -10,3 +11,4 @@ tools/NoCrossHair3.zip
 # too large file
 data/v2-*.png
 data/v3-*.png
+

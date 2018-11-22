@@ -7,14 +7,14 @@ from picHandler import PicScaleControl
 
 class SplitMap:
 
-    def __init__(self, w, h, ch, maxZoom):
+    def __init__(self, w, h, maxZoom):
         self.z = int(maxZoom)
         r = 2  ** self.z
         self.tw = int(w / r)
         self.th = int(h / r)
         self.w = int(r * self.tw)
         self.h = int(r * self.th)
-        self.map = numpy.empty([self.h, self.w, ch], 'uint8')
+        self.map = numpy.empty([self.h, self.w, 4], 'uint8')
 
     def getRange(self, tileSize, tilePos):
         """
@@ -121,6 +121,8 @@ class SplitMap:
         for picItem in picList:
             fname = os.path.join(path, picItem[0])
             pic = picItem[1]
+            if numpy.all(pic[:,:,3] > 127):
+                pic = pic[:,:,0:3];
             old = cv2.imread(fname, cv2.IMREAD_UNCHANGED)
             if (not old is None) and old.shape == pic.shape and numpy.equal(old, pic).all():
                 print('@skip: ', fname)
@@ -171,7 +173,7 @@ def main():
                 m = None
                 continue
             if cmd[0] == 'new':
-                m = SplitMap(int(cmd[1]), int(cmd[2]), int(cmd[3]), int(cmd[4]))
+                m = SplitMap(int(cmd[1]), int(cmd[2]), int(cmd[3]))
                 print(m)
                 continue
             if cmd[0] == 'load':

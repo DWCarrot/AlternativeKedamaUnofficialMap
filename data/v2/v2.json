@@ -2,6 +2,8 @@
   "attribution": "Map-Data: &copy; 2018 Kedama-Koiru Monogatari, Map-Page: &copy; 2018 D.W.Carrot &amp; foraphe &amp; paizi",
   "property": {
     "world": "v2",
+    "width": 9600,
+    "height": 9600,
     "tileSize": 512,
     "picSize": 512,
     "maxZoom": 5,

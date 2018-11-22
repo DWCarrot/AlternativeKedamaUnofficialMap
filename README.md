@@ -55,7 +55,7 @@ Alternative plan for repo [SilentDepth/KedamaMC-Unofficial-Map](https://github.c
 
 - [ ] \#20181112-02 水印(地图标题)
 - [ ] \#20181112-02 标记点
-- [ ] \#20181112-03区块划分线显示
+- [x] \#20181112-03区块划分线显示
 - [ ] \#20181112-04`MinecraftMapManager.getMapMarkers()`,`MinecraftMapManager.getUserMarkers()`
 - [ ] \#20181112-05 距离测量
 

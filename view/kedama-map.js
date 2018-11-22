@@ -1,35 +1,85 @@
 // JavaScript source code
 
-var loadIcon = function(mapUtil) {
-	this.icons = {};
-	for(var i = 1; i <= 16; ++i) {
-		var name = 'settlement-' + i;
-		this.icons[name] = L.icon({
-			iconUrl: 'banner_icon_' + i + '.png',
-			iconSize: [25, 41], // size of the icon
-			iconAnchor: [13, 41], // point of the icon which will correspond to marker's location
-			popupAnchor: [0, -16] // point from which the popup should open relative to the iconAnchor
-		});
-	}
-	var nList = ['-', 'building', 'world', 'facility', 'settlement', 'reserved', 'pointer']
-	for(var i = 1; i <= 6; ++i) {
-		var name = nList[i];
-		this.icons[name] = L.icon({
-			iconUrl: 'marker-icon-' + i + 'x.png',
-			iconSize: [20, 32.8], // size of the icon
-			iconAnchor: [10.5, 32.8], // point of the icon which will correspond to marker's location
-			popupAnchor: [0, -18] // point from which the popup should open relative to the iconAnchor
-		});
-	}
-	mapUtil.mapIcons = this.icons;
-	this.icons = undefined;
-	return mapUtil.mapIcons;
-};
-
 
 window.onload = function() {
+	
+	function loadIcon(mapUtil) {
+		this.icons = {};
+		for(var i = 1; i <= 16; ++i) {
+			var name = 'settlement-' + i;
+			this.icons[name] = L.icon({
+				iconUrl: 'banner_icon_' + i + '.png',
+				iconSize: [25, 41], // size of the icon
+				iconAnchor: [13, 41], // point of the icon which will correspond to marker's location
+				popupAnchor: [0, -16] // point from which the popup should open relative to the iconAnchor
+			});
+		}
+		var nList = ['-', 'building', 'world', 'facility', 'settlement', 'reserved', 'pointer']
+		for(var i = 1; i <= 6; ++i) {
+			var name = nList[i];
+			this.icons[name] = L.icon({
+				iconUrl: 'marker-icon-' + i + 'x.png',
+				iconSize: [20, 32.8], // size of the icon
+				iconAnchor: [10.5, 32.8], // point of the icon which will correspond to marker's location
+				popupAnchor: [0, -18] // point from which the popup should open relative to the iconAnchor
+			});
+		}
+		mapUtil.mapIcons = this.icons;
+		this.icons = undefined;
+		return mapUtil.mapIcons;
+	};
+	
+	/*it works. why?*/
+	function searchDialog(map) {
+		let dom = document.createElement("div");
+		dom.className = "search-dialog-body"
+		let c1 = document.createElement("div");
+		dom.appendChild(c1);
+		let c2_0 = document.createElement("span");
+		c2_0.innerText = "标记点名称:  ";
+		c1.appendChild(c2_0);
+		let c2 = document.createElement("input");
+		c1.appendChild(c2);
 
-	var map_dialog = function(map, htmlElement, title) {
+		let c4 = document.createElement("div");
+		dom.appendChild(c4);
+		let c5 = document.createElement("table");
+		c4.appendChild(c5);
+		c2.addEventListener("input", function(e) {
+			if(e.target.value == '')
+				return;
+			c5.innerHTML = "";
+			let res = map.searchMarks(e.target.value);
+			for (let i = 0; i < res.length; i++) {
+				let t = document.createElement("tr");
+				t.marker = res[i];
+				let d = [];
+				for(let n = 0; n < 4; ++n)
+					t.appendChild(d[n] = document.createElement("td"));
+				d[0].innerText = t.marker.name;
+				d[1].innerText = t.marker.x + ',' + t.marker.z;
+				d[2].innerText = '跳转'
+				d[2].className = 'td-btn'
+				d[2].addEventListener("click", function(e) {
+					let marker = e.target.parentNode.marker;
+					map.setView(marker.x, marker.z);
+				});
+				d[3].innerText = '复制'
+				d[3].className = 'td-btn'
+				d[3].addEventListener("click", function(e) {
+					let marker = e.target.parentNode.marker;
+					let s = JSON.stringify(marker);
+					clipboard(s);
+				});
+				c5.appendChild(t);
+			}
+		});
+		let c3 = document.createElement("hr")
+		dom.appendChild(c3);
+		return dom;
+	}
+	
+	function map_dialog(map, htmlElement, title) {
 		if(!title)
 			title = 'Dialog'
 		let _container = L.DomUtil.create('div', 'leaflet-control-container leaflet-bar leaflet-top dialog', map._container);
@@ -48,14 +98,14 @@ window.onload = function() {
 		return _container;
 	}
 	
-	
-	
+	///////////////////////////////////////////////////////////////////////////////////////
+	///
 	var mapUtil = new MinecraftMapUtil();
 	
 	var mgr = new MinecraftMapManager(mapUtil);
 	
 	console.debug(loadIcon(mapUtil));
-	
+	///
 	var map = L.map('map', {
 		renderer: L.canvas({ padding: 0.01 }),
 		zoomSnap: 0.05,
@@ -248,60 +298,15 @@ window.onload = function() {
 	}*/
 }
 
-/*it works. why?*/
-function searchDialog(map) {
-	let dom = document.createElement("div");
-	dom.className = "search-dialog-body"
-	let c1 = document.createElement("div");
-	dom.appendChild(c1);
-	let c2_0 = document.createElement("span");
-	c2_0.innerText = "标记点名称:  ";
-	c1.appendChild(c2_0);
-	let c2 = document.createElement("input");
-	c1.appendChild(c2);
 
-	let c4 = document.createElement("div");
-	dom.appendChild(c4);
-	let c5 = document.createElement("table");
-	c4.appendChild(c5);
-	c2.addEventListener("input", function(e) {
-		if(e.target.value == '')
-			return;
-		c5.innerHTML = "";
-		let res = map.searchMarks(e.target.value);
-		for (let i = 0; i < res.length; i++) {
-			let t = document.createElement("tr");
-			t.marker = res[i];
-			let d = [];
-			for(let n = 0; n < 4; ++n)
-				t.appendChild(d[n] = document.createElement("td"));
-			d[0].innerText = t.marker.name;
-			d[1].innerText = t.marker.x + ',' + t.marker.z;
-			d[2].innerText = '跳转'
-			d[2].className = 'td-btn'
-			d[2].addEventListener("click", function(e) {
-				let marker = e.target.parentNode.marker;
-				map.setView(marker.x, marker.z);
-			});
-			d[3].innerText = '复制'
-			d[3].className = 'td-btn'
-			d[3].addEventListener("click", function(e) {
-				let marker = e.target.parentNode.marker;
-				let s = JSON.stringify(marker);
-				clipboard(s);
-			});
-			c5.appendChild(t);
-		}
-	});
-	let c3 = document.createElement("hr")
-	dom.appendChild(c3);
-	return dom;
-}
 
 //======================================================================================
+// unused code
 //======================================================================================
 
- function format01(mark) {
+function unused() {
+
+function format01(mark) {
 	return '<div><div>' + mark.title + '</div><div>' + Math.round(mark.x) + ' , ' + Math.round(mark.z) + '</div></div>';
 };
 
@@ -574,7 +579,7 @@ function KedamaMap() {
 	}
 }
 
-/*window.onload*/ var unuse = function () {
+window.onload = function () {
 	
 	var tip = '\
 	+ / - / 鼠标滚轮: 缩放\n\
@@ -669,4 +674,6 @@ function clipboard(str) {
 		console.log('copy to clipboard: success `' + str + '`');
 	}
 	document.body.removeChild(input);
+}
+
 }

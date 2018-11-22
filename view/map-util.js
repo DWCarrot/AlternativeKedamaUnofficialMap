@@ -46,12 +46,18 @@ var MinecraftMapUtil = function() {
 		container.appendChild(dom);
 		return container.innerHTML;
 	}
-
+	
 	this.getJSON = function(url, success, fail, nocache) {
 		if(nocache)
 			url += ('?time=' + new Date().getTime());
 		var data = null;
 		var xmlhttp = new XMLHttpRequest();
+		if("withCredentials" in xmlhttp) {
+			xmlhttp.timeout = 5000;
+		} else if(typeof XDomainRequest != "undefined") {
+			xmlhttp = new XDomainRequest();
+			xmlhttp.timeout = 5000;
+		}
 		xmlhttp.onreadystatechange = function() {
 			if(xmlhttp.readyState == 4) {
 				if(xmlhttp.status == 200) {
@@ -240,6 +246,9 @@ var MinecraftMapUtil = function() {
 		return L.Util.template(document.getElementById(id).innerHTML, data);
 	};
 	
+	/**
+	 *	@return	<L.LayerGroup + 
+	 */
 	this.createMapMarkersLayer = function(dataMarkers) {
 		var markers = [];
 		for (var i = 0; i < dataMarkers.length; ++i) {
@@ -256,7 +265,7 @@ var MinecraftMapUtil = function() {
 	}
 	
 	/**
-	 *	@return	<L.LayerGroup + `.addMarker(event)` + .addMarkerflag<boolean>>
+	 *	@return	<L.LayerGroup + .addMarker(event) + .addMarkerflag<boolean>>
 	 */
 	this.createUserMarkerLayer = function() {
 		var layer = L.layerGroup();
@@ -282,6 +291,26 @@ var MinecraftMapUtil = function() {
 				marker.openPopup();
 			}
 		}
+		return layer;
+	}
+	
+	this.createChunkLineLayer = function(width, height, interval) {
+		var latlngs = [];
+		for(var i = 0; i < width / 2; i += interval) {
+			latlngs.push([[-height / 2, i], [height / 2, i]]);
+			latlngs.push([[-height / 2, -i], [height / 2, -i]]);
+		}
+		for(var i = 0; i < height / 2; i += interval) {
+			latlngs.push([[i, -width / 2], [i, width / 2]]);
+			latlngs.push([[-i, -width / 2], [-i, width / 2]]);
+		}
+		var layer = L.polyline(latlngs, {color: 'red', weight: 1, opacity: 0.2, fill: false});
+		layer.callbacks = {};
+		layer.on('click', function(event) {
+			for(var prop in layer.callbacks) {
+				layer.callbacks[prop](event);
+			}
+		});
 		return layer;
 	}
 	
@@ -361,9 +390,11 @@ var MinecraftMapManager = function(mapUtil) {
 					}),
 					overlayers: {
 						"map-marker": mapUtil.createMapMarkersLayer(data.markers),
-						"user-marker": mapUtil.createUserMarkerLayer()
+						"user-marker": mapUtil.createUserMarkerLayer(),
+						"chunk-split": mapUtil.createChunkLineLayer(data.property.width, data.property.height, 16)
 					}
 				}
+				e.overlayers["chunk-split"].wait = true;
 				that.store[name] = e;
 				layersControl.addBaseLayer(e.baselayer, name);
 				if(show)
@@ -396,7 +427,8 @@ var MinecraftMapManager = function(mapUtil) {
 		if(d) {
 			layersControl._map.options.crs = d.crs;
 			for(prop in d.overlayers) {
-				d.overlayers[prop].addTo(layersControl._map);
+				if(!d.overlayers[prop].wait)
+					d.overlayers[prop].addTo(layersControl._map);
 				layersControl.addOverlay(d.overlayers[prop], prop);
 			}
 			layersControl._map.setView([0,0], Math.max(layersControl._map.getMinZoom(), 2));

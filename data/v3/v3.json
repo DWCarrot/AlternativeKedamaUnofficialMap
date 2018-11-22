@@ -2,6 +2,8 @@
   "attribution": "Map-Data: &copy; 2018 Kedama-Koiru Monogatari, Map-Page: &copy; 2018 D.W.Carrot &amp; foraphe &amp; paizi",
   "property": {
     "world": "v3",
+    "width": 4096,
+    "height": 4096,
     "tileSize": 512,
     "picSize": 512,
     "maxZoom": 3,
@@ -37,10 +39,10 @@
       "title": "卡洛镇",
       "icon": "settlement"
     },
-	{
+    {
       "x": -1303,
       "z": 456,
-      "title": "要塞-01",
+      "title": "西要塞",
       "icon": "facility"
     },
     {
@@ -64,9 +66,15 @@
     },
     {
       "x": 1550,
-      "z": -1637,
+      "z": -1780,
       "title": "蘑菇岛",
       "icon": "facility"
+    },
+    {
+      "x": 1550,
+      "z": -1637,
+      "title": "魔咕岛",
+      "icon": "settlement"
     },
     {
       "x": 1742,
@@ -84,13 +92,13 @@
       "x": -345,
       "z": 440,
       "title": "甜甜圈",
-	  "description": "",
+      "description": "",
       "icon": "facility"
     },
     {
       "x": 551,
       "z": 1498,
-      "title": "天守阁",
+      "title": "樱阁",
       "icon": "settlement"
     },
     {
@@ -100,17 +108,17 @@
       "icon": "settlement"
     },
     {
-      "x": -586,
-      "z": 343,
+      "x": -528,
+      "z": 398,
       "title": "心湖",
-	  "description": "Lonely_Goat 's",
+      "description": "Lonely_Goat 's",
       "icon": "building"
     },
     {
       "x": 1118,
       "z": 1775,
       "title": "阿库亚斯",
-	  "description": "Aqua 家族",
+      "description": "Aqua 家族",
       "icon": "settlement"
     },
     {
@@ -120,16 +128,22 @@
       "icon": "building"
     },
     {
-      "x": -334,
-      "z": 179,
-      "title": "viper!",
-      "icon": "building"
+      "x": -161,
+      "z": 355,
+      "title": "宁静海",
+      "icon": "settlement"
     },
     {
       "x": 336,
       "z": -236,
       "title": "hoyeu",
       "icon": "building"
+    },
+    {
+      "x": -1761,
+      "z": 1294,
+      "title": "西津群岛",
+      "icon": "settlement"
     }
   ]
 }
