@@ -1,32 +1,6 @@
 /*
 const getAbsURL = function (url) {
-	let p = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
-	if (!url.match(p)) {
-		let urlp = url.split('/');
-		let loc = window.location.pathname;
-		let locp = loc.split('/');
-		let i = locp.length - 1;
-		if (loc[loc.length - 1] != '/')
-			--i;
-		++i;
-		for (let j = 0; j < urlp.length; j++) {
-			if (urlp[j] == '..') {
-				--i;
-				continue;
-			}
-			if (urlp[j] == '.') {
-				continue;
-			}
-			locp[i++] = urlp[j];
-		}
-		url = window.location.protocol + '//' + window.location.host;
-		for (let j = 0; j < i; ++j) {
-			if(locp[j] == '')
-				continue;
-			url += ('/' + locp[j]);
-		}
-	}
-	return url;
+	
 }*/
 
 
@@ -35,6 +9,32 @@ var MinecraftMapUtil = function() {
 
 	this.mapIcons = {};
 
+	this,getAbsURL = function(url) {
+		var p = /^(http[s]?|ftp):\/\/([^/:]+)(:\d*)?([^#?\s]+)(\?[^#]*)?(#\S+)?$/;
+		if (!url.match(p)) {
+			var path = '';
+			if(url.slice(0, 1) == '/') {
+				path = url;
+			} else {
+				path = window.location.pathname;
+				path = path.slice(0, path.lastIndexOf("/")) + '/' + url;
+			}
+			path = path.split("/");
+			url = [];
+			for(var i = 0; i < path.length; ++i) {
+				if(path[i] == ".")
+					continue;
+				if(path[i] == "..") {
+					url.pop();
+					continue;
+				}
+				url.push(path[i]);
+			}
+			url = window.location.protocol + "//" + window.location.host + "/" + url.join("/");
+		}
+		return url;
+	}
+	
 	this.str2dom = function(html) {
 		var container = document.createElement('div');
 		container.innerHTML = html;
@@ -47,16 +47,65 @@ var MinecraftMapUtil = function() {
 		return container.innerHTML;
 	}
 	
-	this.getJSON = function(url, success, fail, nocache) {
+	this.getJSONs = function(url, success, args1, fail, args2, nocache, timeout) {
+		if(!timeout)
+			timeout = 5000;
+		if(typeof url == "string") {
+			url = {"$url": url};
+		}
+		var reqs = {};
+		var dataList = {};
+		for(var prop in url) {
+			var req = new XMLHttpRequest();
+			if(nocache)
+				url[prop] += ('?time=' + new Date().getTime());
+			dataList[prop] = null;
+			reqs[prop] = req;
+			req._id = prop;
+			req.timeout = timeout;
+			req.onload = function(event) {
+				var p = event.target._id;
+				try {
+					dataList[p] = JSON.parse(event.target.responseText);
+					console.log(dataList[p]);
+				} catch(e) {
+					console.log(e);
+					if(fail)
+						fail(e, args2);
+				}
+				delete reqs[p];
+				if(Object.keys(reqs).length == 0) {
+					if(Object.keys(dataList).length == 1 && ("$url" in dataList))
+						dataList = dataList["$url"];
+					if(success)
+						success(dataList, args1);
+				}
+			};
+			req.onerror = function(event) {
+				console.log(event.target);
+				delete reqs[event.target._id];
+				if(fail)
+					fail(event.target, args2);
+			}
+			req.open("GET", url[prop], true);
+		}
+		for(var prop in reqs)
+			reqs[prop].send();
+	}
+	
+	
+	this.getJSON = function(url, success, args1, fail, args2, nocache, timeout) {
+		if(!timeout)
+			timeout = 5000;
 		if(nocache)
 			url += ('?time=' + new Date().getTime());
 		var data = null;
 		var xmlhttp = new XMLHttpRequest();
 		if("withCredentials" in xmlhttp) {
-			xmlhttp.timeout = 5000;
+			xmlhttp.timeout = timeout;
 		} else if(typeof XDomainRequest != "undefined") {
 			xmlhttp = new XDomainRequest();
-			xmlhttp.timeout = 5000;
+			xmlhttp.timeout = timeout;
 		}
 		xmlhttp.onreadystatechange = function() {
 			if(xmlhttp.readyState == 4) {
@@ -64,21 +113,24 @@ var MinecraftMapUtil = function() {
 					try {
 						data = JSON.parse(xmlhttp.responseText);
 					} catch (e) {
-						console.log(e);
+						console.warn(e);
+						if(fail)
+							fail(e, args2);
 					}
 					console.debug(data);
 					if(success && data)
-						success(data);                   
+						success(data, args1);                   
 				} else {
-					console.log(xmlhttp);
+					console.warn(xmlhttp.responseURL, xmlhttp.status, xmlhttp.statusText);
 					if(fail)
-						fail(xmlhttp.responseText);                        
+						fail(xmlhttp, args2);                        
 				}
 			}
 		}
 		xmlhttp.open("GET", url, true);
 		xmlhttp.send();
 	};
+	
 
 	this.CRS = function(options) {
 		var scale = 1;      /**  = `real length` / `pixel length`  **/
@@ -226,6 +278,26 @@ var MinecraftMapUtil = function() {
 		return new this._ScaleControl(options);
 	};
 	
+	this.LayersControl = function(options) {
+		if(options == undefined)
+			options = {};
+		options.sortLayers = false;		//failed
+		options.sortFunction = function(layerA, layerB, nameA, nameB) {
+			if(layerA._mcmp_priority == undefined || layerB._mcmp_priority == undefined)
+				return nameA.localeCompare(nameB);
+			else
+				return Math.sign(layerB._mcmp_priority - layerA._mcmp_priority);
+		}
+		return new L.Control.Layers({}, {}, options);
+	}
+	
+	this._ChunkMarker = L.Path.extend({
+		
+		initialize: function(options) {
+			L.Util.setOptions(this, options);
+		}
+		
+	});
 	
 	this.setCoordinate = function(map, crs) {
 		map.options.crs = crs;
@@ -368,43 +440,80 @@ var MinecraftMapManager = function(mapUtil) {
 	 *	@param	callback	<Function>	(<:store-struct> struct)
 	 *							<:store-struct>: {data:<json-object>, crs:<L.CRS>, baseLayer:<L.TileLayer>, overlayers: {overlayer: <L.Layer>...}}
 	 */
-	this.registerMap = function(name, jsonURL, mapURL, layersControl, show, callback) {
+	this.registerMap = function(url, layersControl, callback, args) {
 		var that = this;
 		mapUtil.getJSON(
-			jsonURL,
+			url,
 			function(data) {
-				var e = {
-					data: data,
-					crs: mapUtil.CRS({
-						scale: data.property.scale,
-						offset: L.latLng(data.property.offsetZ, data.property.offsetX),
-						tileSize: data.property.tileSize,
-						picSize: data.property.picSize,
-						maxZoom: data.property.maxZoom
-					}),
-					baselayer: L.tileLayer(mapURL, {
-						world: data.property.world,
-						attribution: data.attribution,
-						tileSize: data.property.tileSize,
-						maxZoom: data.property.maxZoom,
-					}),
-					overlayers: {
-						"map-marker": mapUtil.createMapMarkersLayer(data.markers),
-						"user-marker": mapUtil.createUserMarkerLayer(),
-						"chunk-split": mapUtil.createChunkLineLayer(data.property.width, data.property.height, 16)
+				var e = {};
+				e.name = data.world;
+				e.default = data.default;
+				e.crs = mapUtil.CRS({
+					scale: data.baselayer.scale,
+					offset: L.latLng(data.baselayer.offsetZ, data.baselayer.offsetX),
+					tileSize: data.baselayer.tileSize,
+					picSize: data.baselayer.picSize,
+					maxZoom: data.baselayer.maxZoom
+				});
+				e.baselayer = L.tileLayer(data.baselayer["tile-url"], {
+					world: data.world,
+					attribution: data.attribution,
+					tileSize: data.baselayer.tileSize,
+					maxZoom: data.baselayer.maxZoom,
+				});
+				e.overlayers = {};
+				for(var prop in data.overlayers) {
+					var options = data.overlayers[prop];
+					switch(options.func) {
+						case "$MapMarkers":
+							mapUtil.getJSON(
+								options["marker-url"],
+								function(mdata, p) {
+									if(!mdata)
+										return;
+									var layer = mapUtil.createMapMarkersLayer(mdata);
+									layer._mcmp_default = data.overlayers[p].default;
+									layer._mcmp_data = mdata;
+									layer._mcmp_priority = data.overlayers[p].priority
+									e.overlayers[p] = layer;
+//									console.debug(2, Object.keys(e.overlayers));
+									if(that.index == e.name) {
+										if(layer._mcmp_default)
+											layer.addTo(layersControl._map);
+										layersControl.addOverlay(layer, p);
+									}
+								},
+								prop,
+								undefined,
+								undefined,
+								true,
+								5000,
+							);
+							break;
+						case "$UserMarkers":
+							var layer = mapUtil.createUserMarkerLayer();
+							layer._mcmp_default = options.default;
+							layer._mcmp_priority = options.priority;
+							e.overlayers[prop] = layer;
+							break;
 					}
 				}
-				e.overlayers["chunk-split"].wait = true;
-				that.store[name] = e;
-				layersControl.addBaseLayer(e.baselayer, name);
-				if(show)
+				that.store[data.world] = e;
+				layersControl.addBaseLayer(e.baselayer, data.world);
+				if(data.default) {
 					e.baselayer.addTo(layersControl._map);
-				callback(e);
+//					console.debug(1, Object.keys(e.overlayers));
+				}
+				if(typeof callback == "function")
+					callback(e, args);
 			},
+			undefined,
 			function(error) {
-				console.log(error)
+				
 			},
-			true
+			undefined,
+			true,
+			5000
 		);
 	}
 	
@@ -424,10 +533,11 @@ var MinecraftMapManager = function(mapUtil) {
 		}
 		this.index = event.name;
 		d = this.store[this.index];
+//		console.debug(3, Object.keys(d.overlayers));
 		if(d) {
 			layersControl._map.options.crs = d.crs;
 			for(prop in d.overlayers) {
-				if(!d.overlayers[prop].wait)
+				if(d.overlayers[prop]._mcmp_default)
 					d.overlayers[prop].addTo(layersControl._map);
 				layersControl.addOverlay(d.overlayers[prop], prop);
 			}

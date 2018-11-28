@@ -1,6 +1,5 @@
 // JavaScript source code
 
-
 window.onload = function() {
 	
 	function loadIcon(mapUtil) {
@@ -114,7 +113,7 @@ window.onload = function() {
 	}).setView([0,0],0);
 	
 	//common layer: ControlLayer
-	var layerControl = L.control.layers({}, {}).addTo(map);
+	var layerControl = mapUtil.LayersControl().addTo(map);
 	
 	//common layer: ScaleControl
 	var scaleControl = mapUtil.ScaleControl({
@@ -126,25 +125,22 @@ window.onload = function() {
 	if(!mapUtil.getFragment())
 		mapUtil.setFragment('v3');
 	
+	
 	mgr.registerMap(
-		"v2",
-		'../data/v2/v2.json',
-		'../data/{world}/{z}/{x},{y}.png',
+		'../data/v2/v2-settings.json',
 		layerControl,
-		mapUtil.getFragment() == 'v2',
 		function(e) {
-			
+			if(e.default)
+				document.querySelector('#map').style.backgroundColor = "black";
 		}
 	);
 	
 	mgr.registerMap(
-		"v3",
-		'../data/v3/v3.json',
-		'../data/{world}/{z}/{x},{y}.png',
+		'../data/v3/v3-settings.json',
 		layerControl,
-		mapUtil.getFragment() == 'v3',
 		function(e) {
-			
+			if(e.default)
+				document.querySelector('#map').style.backgroundColor = "black";
 		}
 	);
 	
@@ -229,14 +225,31 @@ window.onload = function() {
 				}*/
 				map_dialog(map, searchDialog(u), 'Search');
 			},
+			"SetMark": function() {
+				var userMarkersLayer = mgr.getCurrentDataStruct().overlayers['user-marker'];
+				if(userMarkersLayer && userMarkersLayer.addMarker) {
+					try {
+						var s = prompt('标记点位置: ', '0,0');
+						s = s.split(',');
+						s[0] = Number.parseFloat(s[0]);
+						s[1] = Number.parseFloat(s[1]);
+						userMarkersLayer.addMarkerflag = true;
+						userMarkersLayer.addMarker({latlng: L.latLng(s[1], s[0])});
+						userMarkersLayer.addMarkerflag = undefined;
+						map.setView(L.latLng(s[1], s[0]), map.getMaxZoom());
+					} catch(e) {
+						alert(e);
+					}
+				}
+			},
 			"About": function () {
-				alert('推荐功能更完善的地图版本\n[jsw YAKM](https://kedama-map.jsw3286.eu.org/v2/#4800,0,0)');
+				alert('推荐功能更完善的地图版本\n[jsw YAKM](https://kedama-map.jsw3286.eu.org/');
 				var cet = document.createElement("center");
 				var p = document.createElement("p");
 				var warn = document.createTextNode("此条目正在开发中...");
 				cet.appendChild(warn);
 				map_dialog(map, cet, 'About');
-			}
+			},
 		}
 	}).addTo(map);
 	
@@ -249,59 +262,15 @@ window.onload = function() {
 		mgr.onChangeBaselayers(event, layerControl);
 	});
 	
-	/*
-	var mapGroup = {
-		v2: new MinecraftMapGroup(
-			map,
-			'../data/{world}/{z}/{x},{y}.png',
-			'../data/v2/v2.json',
-			{
-				onloadJSON: function(g) {
-					layerControl.addBaseLayer(g.baseLayer, 'v2');
-					g.dynamicLayers['map-markers'] = g.generateDataMarker();
-					g.dynamicLayers['user-markers'] = g.generateUserMarker();
-				},
-				onAdd: function(g) {
-					g.setMapCRS(map);
-					g.setMapOnClick(map);
-					g.addToControlLayer(layerControl);
-					map.setView([0,0], 2);
-				},
-				onRemove: function(g) {
-					g.removeFromControlLayer(layerControl);
-					g.removeMapOnClick(map);
-				}
-			}
-		),
-		v3: new MinecraftMapGroup(
-			map,
-			'../data/{world}/{z}/{x},{y}.png',
-			'../data/v3/v3.json',
-			{
-				onloadJSON: function(g) {
-					layerControl.addBaseLayer(g.baseLayer, 'v3');
-					g.dynamicLayers['map-markers'] = g.generateDataMarker();
-					g.dynamicLayers['user-markers'] = g.generateUserMarker();
-				},
-				onAdd: function(g) {
-					g.setMapCRS(map);
-					g.setMapOnClick(map);
-					g.addToControlLayer(layerControl);
-					map.setView([0,0],5);
-				},
-				onRemove: function(g) {
-					g.removeFromControlLayer(layerControl);
-					g.removeMapOnClick(map);
-				}
-			}
-		),
-	}*/
+	_hook = {map: map, util: mapUtil};
+	
 }
 
 
-
+//======================================================================================
 //======================================================================================
 // unused code
+//======================================================================================
 //======================================================================================
 
 function unused() {

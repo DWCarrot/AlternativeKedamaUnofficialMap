@@ -78,3 +78,7 @@ html {
 .td-btn:hover {
 	background-color: #f4f4f4;
 }
+
+#map {
+	cursor: default;
+}

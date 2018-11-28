@@ -1,0 +1,28 @@
+{
+  "attribution": "Map-Data: &copy; 2018 Kedama-Koiru Monogatari, Map-Page: &copy; 2018 D.W.Carrot &amp; foraphe &amp; paizi",
+  "world": "v3",
+  "default": true,
+  "baselayer": {
+    "tile-url": "../data/v3/{z}/{x},{y}.png",
+    "width": 4096,
+    "height": 4096,
+    "tileSize": 512,
+    "picSize": 512,
+    "maxZoom": 3,
+    "scale": 1,
+    "offsetX": -64,
+    "offsetZ": -64
+  },
+  "overlayers": {
+    "map-marker": {
+      "func": "$MapMarkers",
+      "default": true,
+      "marker-url": "https://view.yepweb.tk/kedama-map/v3-markers.json"
+    },
+    "user-marker": {
+      "func": "$UserMarkers",
+      "default": true
+    }   
+  }
+}
+

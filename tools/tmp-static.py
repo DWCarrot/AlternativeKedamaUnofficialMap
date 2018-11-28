@@ -8,7 +8,7 @@ PORT = 28080
 
 Handler = http.server.SimpleHTTPRequestHandler
 
-os.chdir('../')
+os.chdir('E:/workspace/AlternativeKedamaUnofficialMap/')
 
 with socketserver.TCPServer(("0.0.0.0", PORT), Handler) as httpd:
     print("serving at port", PORT)

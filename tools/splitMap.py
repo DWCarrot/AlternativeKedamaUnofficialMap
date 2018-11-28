@@ -62,7 +62,7 @@ class SplitMap:
                         if r:
                             r = (r[0][0,0],r[0][1,0],r[0][0,1],r[0][1,1],r[1][0,0],r[1][1,0],r[1][0,1],r[1][1,1])
                             print('@load ', fpath, ' => ', r[:4])
-                            if part.shape[2] != self.map.shape[2] :
+                            if part.shape[2] == 3:
                                 self.map[r[0]:r[1],r[2]:r[3],:3] = part[r[4]:r[5],r[6]:r[7],:]
                                 self.map[r[0]:r[1],r[2]:r[3],3] = 255
                             else:
