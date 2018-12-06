@@ -17,8 +17,8 @@
     "map-marker": {
       "func": "$MapMarkers",
       "default": true,
-      "*url": "../data/v3/v3-markers.json",
-      "url": "https://view.yepweb.tk/kedama-map/v3-markers.json"
+      "url": "../data/v3/v3-markers.json",
+      "*url": "https://view.yepweb.tk/kedama-map/v3-markers.json"
     },
     "user-marker": {
       "func": "$UserMarkers",
@@ -26,9 +26,9 @@
     },
     "chunk-marker": {
       "func": "$ChunkMarkGroup",
-      "*url": "../data/v3/v3-chunkmark.json",
-      "url": "https://view.yepweb.tk/kedama-map/v3-chunkmark.json",
-      "default": false
+      "default": false,
+      "url": "../data/v3/v3-chunkmark.json",
+      "*url": "https://view.yepweb.tk/kedama-map/v3-chunkmark.json"
     }
   }
 }
