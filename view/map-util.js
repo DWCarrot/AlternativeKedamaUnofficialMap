@@ -283,10 +283,10 @@ var MinecraftMapUtil = function() {
 			options = {};
 		options.sortLayers = false;		//failed
 		options.sortFunction = function(layerA, layerB, nameA, nameB) {
-			if(layerA._mcmp_priority == undefined || layerB._mcmp_priority == undefined)
+			if(layerA.mc_priority == undefined || layerB.mc_priority == undefined)
 				return nameA.localeCompare(nameB);
 			else
-				return Math.sign(layerB._mcmp_priority - layerA._mcmp_priority);
+				return Math.sign(layerB.mc_priority - layerA.mc_priority);
 		}
 		return new L.Control.Layers({}, {}, options);
 	}
@@ -337,13 +337,13 @@ var MinecraftMapUtil = function() {
 	}
 	
 	/**
-	 *	@return	<L.LayerGroup + .addMarker(event) + .addMarkerflag<boolean>>
+	 *	@return	<L.LayerGroup + .mc_addMarker(event) + .mc_addMarkerflag<boolean>>
 	 */
 	this.createUserMarkerLayer = function() {
 		var layer = L.layerGroup();
 		var that = this;
-		layer.addMarker = function(event) {
-			if(layer.addMarkerflag) {
+		layer.mc_addMarker = function(event) {
+			if(layer.mc_addMarkerflag) {
 				var options = {};
 				if(event.markerIcon == undefined)
 					event.markerIcon = "pointer";
@@ -356,7 +356,7 @@ var MinecraftMapUtil = function() {
 					})
 				);
 				marker.on('click', function() {
-					if(layer.addMarkerflag)
+					if(layer.mc_addMarkerflag)
 						layer.removeLayer(marker);
 				});
 				layer.addLayer(marker);
@@ -448,14 +448,14 @@ var MinecraftMapManager = function(mapUtil) {
 				var e = {};
 				e.name = data.world;
 				e.default = data.default;
-				e.crs = mapUtil.CRS({
+				e.crs = new L.KC.CRS({
 					scale: data.baselayer.scale,
 					offset: L.latLng(data.baselayer.offsetZ, data.baselayer.offsetX),
 					tileSize: data.baselayer.tileSize,
 					picSize: data.baselayer.picSize,
 					maxZoom: data.baselayer.maxZoom
 				});
-				e.baselayer = L.tileLayer(data.baselayer["tile-url"], {
+				e.baselayer = L.tileLayer(data.baselayer["url"], {
 					world: data.world,
 					attribution: data.attribution,
 					tileSize: data.baselayer.tileSize,
@@ -467,18 +467,20 @@ var MinecraftMapManager = function(mapUtil) {
 					switch(options.func) {
 						case "$MapMarkers":
 							mapUtil.getJSON(
-								options["marker-url"],
+								options["url"],
 								function(mdata, p) {
 									if(!mdata)
 										return;
-									var layer = mapUtil.createMapMarkersLayer(mdata);
-									layer._mcmp_default = data.overlayers[p].default;
-									layer._mcmp_data = mdata;
-									layer._mcmp_priority = data.overlayers[p].priority
+									for(var i = 0; i < mdata.length; ++i)
+										if(mdata[i].icon && mapUtil.mapIcons[mdata[i].icon])
+											 mdata[i].icon = mapUtil.mapIcons[mdata[i].icon];
+									var layer = new L.KC.MarkersGroup(mdata);
+									layer.mc_default = data.overlayers[p].default;
+									layer.mc_data = mdata;
+									layer.mc_priority = data.overlayers[p].priority
 									e.overlayers[p] = layer;
-//									console.debug(2, Object.keys(e.overlayers));
 									if(that.index == e.name) {
-										if(layer._mcmp_default)
+										if(layer.mc_default)
 											layer.addTo(layersControl._map);
 										layersControl.addOverlay(layer, p);
 									}
@@ -491,10 +493,33 @@ var MinecraftMapManager = function(mapUtil) {
 							);
 							break;
 						case "$UserMarkers":
-							var layer = mapUtil.createUserMarkerLayer();
-							layer._mcmp_default = options.default;
-							layer._mcmp_priority = options.priority;
+							var layer = new L.KC.MarkersGroup([]);
+							layer.mc_default = options.default;
+							layer.mc_priority = options.priority;
 							e.overlayers[prop] = layer;
+							break;
+						case "$ChunkMarkGroup":
+							mapUtil.getJSON(
+								options["url"],
+								function(mdata, p) {
+									var layer = new L.KC.BChunkMarker(mdata, {onAddCallback: ()=>{that.getCurrentDataStruct().baselayer.setOpacity(0.25);}, onRemoveCallback: ()=>{that.getCurrentDataStruct().baselayer.setOpacity(1);}, });
+									layer.mc_default = data.overlayers[p].default;
+									layer.mc_data = mdata;
+									layer.mc_priority = data.overlayers[p].priority
+									e.overlayers[p] = layer;
+									if(that.index == e.name) {
+										if(layer.mc_default)
+											layer.addTo(layersControl._map);
+										layersControl.addOverlay(layer, p);
+									}
+								},
+								prop,
+								undefined,
+								undefined,
+								true,
+								5000,
+							);
+							
 							break;
 					}
 				}
@@ -537,7 +562,7 @@ var MinecraftMapManager = function(mapUtil) {
 		if(d) {
 			layersControl._map.options.crs = d.crs;
 			for(prop in d.overlayers) {
-				if(d.overlayers[prop]._mcmp_default)
+				if(d.overlayers[prop].mc_default)
 					d.overlayers[prop].addTo(layersControl._map);
 				layersControl.addOverlay(d.overlayers[prop], prop);
 			}

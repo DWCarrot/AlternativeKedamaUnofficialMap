@@ -2,7 +2,7 @@
   "attribution": "Map-Data: &copy; 2018 Kedama-Koiru Monogatari, Map-Page: &copy; 2018 D.W.Carrot &amp; foraphe &amp; paizi",
   "world": "v2",
   "baselayer": {
-    "tile-url": "../data/v2/{z}/{x},{y}.png",
+    "url": "../data/v2/{z}/{x},{y}.png",
     "width": 9600,
     "height": 9600,
     "tileSize": 512,
@@ -16,7 +16,7 @@
     "map-marker": {
       "func": "$MapMarkers",
       "default": true,
-      "marker-url": "../data/v2/v2-markers.json"
+      "url": "../data/v2/v2-markers.json"
     },
     "user-marker": {
       "func": "$UserMarkers",

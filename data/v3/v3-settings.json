@@ -3,7 +3,7 @@
   "world": "v3",
   "default": true,
   "baselayer": {
-    "tile-url": "../data/v3/{z}/{x},{y}.png",
+    "url": "../data/v3/{z}/{x},{y}.png",
     "width": 4096,
     "height": 4096,
     "tileSize": 512,
@@ -17,12 +17,19 @@
     "map-marker": {
       "func": "$MapMarkers",
       "default": true,
-      "marker-url": "https://view.yepweb.tk/kedama-map/v3-markers.json"
+      "*url": "../data/v3/v3-markers.json",
+      "url": "https://view.yepweb.tk/kedama-map/v3-markers.json"
     },
     "user-marker": {
       "func": "$UserMarkers",
       "default": true
-    }   
+    },
+    "chunk-marker": {
+      "func": "$ChunkMarkGroup",
+      "*url": "../data/v3/v3-chunkmark.json",
+      "url": "https://view.yepweb.tk/kedama-map/v3-chunkmark.json",
+      "default": false
+    }
   }
 }
 

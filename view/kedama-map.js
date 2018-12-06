@@ -169,9 +169,10 @@ window.onload = function() {
 	
 	
 	//common layer: MenuControl
-	var menuControl = mapUtil.MenuControl({
-		items: {
-			"Help": function () {
+	var menuControl = new L.KC.VMenuControl('MENU', [
+		{
+			title: 'Help',
+			callback: function () {
 				let dom = document.createElement('div');
 				dom.innerHTML = '<table style="text-align:left;">'
 					+ '<tr><td>+ / - / 鼠标滚轮</td><td>缩放</td></tr>'
@@ -181,22 +182,10 @@ window.onload = function() {
 					+ '<tr><td>Menu-Search</td><td>搜索标记点，可根据搜索结果索引跳转</td></tr>'
 					+ '</table>';
 				map_dialog(map, dom, 'Tips');
-			},
-			"Marking": function (e) {
-				var userMarkersLayer = mgr.getCurrentDataStruct().overlayers['user-marker'];
-				if(userMarkersLayer) {
-					if (userMarkersLayer.addMarkerflag) {
-						map.off('click', userMarkersLayer.addMarker)
-						userMarkersLayer.addMarkerflag = undefined;
-						e.target.style.backgroundColor = "";
-					} else {
-						e.target.style.backgroundColor = "#AFD";
-						setTimeout(function(){userMarkersLayer.addMarkerflag = true;}, 10); 
-						map.on('click', userMarkersLayer.addMarker);
-					}
-				}
-			},
-			"Search": function () {
+			}
+		}, {
+			title: "Search",
+			callback: function () {
 				/*
 				var keyword = prompt('标记点名称: ', 'keyword');
 				if (keyword != 'keyword') {
@@ -225,24 +214,52 @@ window.onload = function() {
 				}*/
 				map_dialog(map, searchDialog(u), 'Search');
 			},
-			"SetMark": function() {
-				var userMarkersLayer = mgr.getCurrentDataStruct().overlayers['user-marker'];
-				if(userMarkersLayer && userMarkersLayer.addMarker) {
-					try {
-						var s = prompt('标记点位置: ', '0,0');
-						s = s.split(',');
-						s[0] = Number.parseFloat(s[0]);
-						s[1] = Number.parseFloat(s[1]);
-						userMarkersLayer.addMarkerflag = true;
-						userMarkersLayer.addMarker({latlng: L.latLng(s[1], s[0])});
-						userMarkersLayer.addMarkerflag = undefined;
-						map.setView(L.latLng(s[1], s[0]), map.getMaxZoom());
-					} catch(e) {
-						alert(e);
+		}, {
+			title: "Marker",
+			sub: [{
+					title: 'on/off',
+					callback: function (e) {
+						var userMarkersLayer = mgr.getCurrentDataStruct().overlayers['user-marker'];
+						if(userMarkersLayer) {
+							if (userMarkersLayer.mc_addMarkerCallback) {
+								userMarkersLayer.disableMarkerRemove();
+								map.off('click', userMarkersLayer.mc_addMarkerCallback);
+								delete userMarkersLayer.mc_addMarkerCallback;
+								e.target._lkc_vm_p.style.backgroundColor = "";
+							} else {
+								e.target._lkc_vm_p.style.backgroundColor = "#AFD";
+								userMarkersLayer.mc_addMarkerCallback = function(event) {
+									userMarkersLayer.addMarker({title: '', x: Math.round(event.latlng.lng), z: Math.round(event.latlng.lat), icon: mapUtil.mapIcons['pointer']}, true);
+								}
+								setTimeout(function() {
+									map.on('click', userMarkersLayer.mc_addMarkerCallback);
+								}, 10);
+								
+								userMarkersLayer.enableMarkerRemove();
+							}
+						}
 					}
+				}, {
+					title: "SetMark",
+					callback: function() {
+						var userMarkersLayer = mgr.getCurrentDataStruct().overlayers['user-marker'];
+						if(userMarkersLayer) {
+							try {
+								var s = prompt('标记点位置: ', '0,0');
+								s = s.split(',');
+								userMarkersLayer.addMarker({title: '', x: Number.parseFloat(s[0]), z: Number.parseFloat(s[1]), icon: mapUtil.mapIcons['pointer']}, true);
+								map.setView(L.latLng(s[1], s[0]), map.getMaxZoom());
+							} catch(e) {
+								alert(e);
+							}
+						}
+					},
 				}
-			},
-			"About": function () {
+			]
+			
+		}, {
+			title: "About",
+			callback: function () {
 				alert('推荐功能更完善的地图版本\n[jsw YAKM](https://kedama-map.jsw3286.eu.org/');
 				var cet = document.createElement("center");
 				var p = document.createElement("p");
@@ -251,7 +268,7 @@ window.onload = function() {
 				map_dialog(map, cet, 'About');
 			},
 		}
-	}).addTo(map);
+	]).addTo(map);
 	
 	//register pointer show
 	map.on('mousemove', function (event) {
@@ -262,7 +279,7 @@ window.onload = function() {
 		mgr.onChangeBaselayers(event, layerControl);
 	});
 	
-	_hook = {map: map, util: mapUtil};
+	_hook = {map: map, util: mapUtil, mgr: mgr};
 	
 }
 

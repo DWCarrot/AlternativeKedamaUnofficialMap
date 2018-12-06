@@ -10,6 +10,8 @@
 
 <body>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="" />
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="lib/L.Control.SlideMenu.css">
     <link rel="stylesheet" href="kedama-map.css" />
     <center>
     <div id="map">
@@ -21,14 +23,23 @@
 	document.querySelector('#map').style.width='auto';
     </script>
     <div id="debug" style="height:50px"></div>
-    <!-- -->
+    <!--
 	<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
-	
-	<!--
+	 -->
+	<!-- -->
 	<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet-src.js" integrity="sha512-+ZaXMZ7sjFMiCigvm8WjllFy6g3aou3+GZngAtugLzrmPFKFK7yjSri0XnElvCTu/PrifAYQuxZTybAEkA8VOA==" crossorigin="" ></script>
-	-->
+	
+	<script src="lib/L.Control.SlideMenu.js"></script>
+	
+	<script src="file-operation.js" ></script>
+	<script src="leaflet-canvas_overlay.js"></script>
+	<script src="leaflet-kedama_craft_map-plugins.js"></script>
 	<script src="map-util.js"></script>
 	<script src="kedama-map.js"></script>
+	
+	
+	
+	
 	
 	<div id="template-popup-01" hidden="hidden">
 		<div style="font-weight:bold;">{title}</div>
