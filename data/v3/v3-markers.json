@@ -84,7 +84,7 @@
   {
     "x": -763,
     "z": -1947,
-    "title": "小镇",
+    "title": "绿洲城",
     "icon": "settlement"
   },
   {
@@ -161,6 +161,42 @@
     "z": 852,
     "title": "恶魔电池",
     "icon": "facility",
-	"description": "by iryCat<br/>公共项目<br/>另一座超大规模猪人塔<br/><span style=\"color: plum;\">猪人塔是来自地狱的力量，稍不注意即被反噬</span>"
+    "description": "by iryCat<br/>公共项目<br/>另一座超大规模猪人塔<br/><span style=\"color: plum;\">猪人塔是来自地狱的力量，稍不注意即被反噬</span>"
+  },
+  {
+    "x": -565,
+    "z": 29,
+    "title": "BlingWang's",
+    "icon": "building"
+  },
+  {
+    "x": -851,
+    "z": 857,
+    "title": "红石庄",
+    "icon": "settlement"
+  },
+  {
+    "x": 1161,
+    "z": 877,
+    "title": "风华开海",
+    "icon": "settlement"
+  },
+  {
+    "x": 334,
+    "z": -1517,
+    "title": "虎崖军港",
+    "icon": "settlement"
+  },
+  {
+    "x": 1155,
+    "z": -1635,
+    "title": "修野",
+    "icon": "building"
+  },
+  {
+    "x": -286,
+    "z": 84,
+    "title": "维京商船",
+    "icon": "building"
   }
 ]
