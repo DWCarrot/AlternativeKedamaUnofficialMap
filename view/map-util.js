@@ -101,12 +101,6 @@ var MinecraftMapUtil = function() {
 			url += ('?time=' + new Date().getTime());
 		var data = null;
 		var xmlhttp = new XMLHttpRequest();
-		if("withCredentials" in xmlhttp) {
-			xmlhttp.timeout = timeout;
-		} else if(typeof XDomainRequest != "undefined") {
-			xmlhttp = new XDomainRequest();
-			xmlhttp.timeout = timeout;
-		}
 		xmlhttp.onreadystatechange = function() {
 			if(xmlhttp.readyState == 4) {
 				if(xmlhttp.status == 200) {
@@ -128,6 +122,12 @@ var MinecraftMapUtil = function() {
 			}
 		}
 		xmlhttp.open("GET", url, true);
+		if("withCredentials" in xmlhttp) {
+			xmlhttp.timeout = timeout;
+		} else if(typeof XDomainRequest != "undefined") {
+			xmlhttp = new XDomainRequest();
+			xmlhttp.timeout = timeout;
+		}
 		xmlhttp.send();
 	};
 	
@@ -489,7 +489,7 @@ var MinecraftMapManager = function(mapUtil) {
 								undefined,
 								undefined,
 								true,
-								5000,
+								5000
 							);
 							break;
 						case "$UserMarkers":
@@ -502,7 +502,7 @@ var MinecraftMapManager = function(mapUtil) {
 							mapUtil.getJSON(
 								options["url"],
 								function(mdata, p) {
-									var layer = new L.KC.BChunkMarker(mdata, {onAddCallback: ()=>{that.getCurrentDataStruct().baselayer.setOpacity(0.25);}, onRemoveCallback: ()=>{that.getCurrentDataStruct().baselayer.setOpacity(1);}, });
+									var layer = new L.KC.BChunkMarker(mdata, {onAddCallback: function(){that.getCurrentDataStruct().baselayer.setOpacity(0.25);}, onRemoveCallback: function() {that.getCurrentDataStruct().baselayer.setOpacity(1);}, });
 									layer.mc_default = data.overlayers[p].default;
 									layer.mc_data = mdata;
 									layer.mc_priority = data.overlayers[p].priority
@@ -517,7 +517,7 @@ var MinecraftMapManager = function(mapUtil) {
 								undefined,
 								undefined,
 								true,
-								5000,
+								5000
 							);
 							
 							break;

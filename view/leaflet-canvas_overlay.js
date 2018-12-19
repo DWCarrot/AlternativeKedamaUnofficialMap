@@ -155,10 +155,6 @@ L.CanvasOverlay = L.Layer.extend({
 	getElement: function () {
 		return this._canvas;
 	},
-
-	getProjection() {
-		
-	},
 	
 	_initCanvas: function (canvas) {
 		

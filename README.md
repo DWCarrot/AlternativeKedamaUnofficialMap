@@ -8,7 +8,11 @@ Alternative plan for repo [SilentDepth/KedamaMC-Unofficial-Map](https://github.c
 
 ### [[github-preview]](https://dwcarrot.github.io/AlternativeKedamaUnofficialMap/view/kedama-map.html)
 
-**[2018/11/12]  加入v3世界地图(scale=1:4 vanilla map);控制台切换世界;可以在URL中使用`#fragment`选择预设世界**                    赞美李德二！
+
+
+**[2018/11/12]  加入v3世界地图(voxelmap)**
+
+[2018/11/12]  加入v3世界地图(scale=1:4 vanilla map);控制台切换世界;可以在URL中使用`#fragment`选择预设世界                    赞美李德二！
 
 基础图源来自SilentDepth/KedamaMC-Unofficial-Map(赞美鹅叔！)，利用python-openCV进行部分地图更新
 

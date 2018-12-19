@@ -80,7 +80,7 @@ def calibration(img, pts1, pts2):
     cv2.destroyAllWindows()
     return img
 
-def split(img, path, nx, ny):
+def split(img, path, nx, ny, tw, th):
     r,c,ch = img.shape
     imList = []
     x = 0
@@ -89,14 +89,14 @@ def split(img, path, nx, ny):
         y = 0
         nny = int(ny)
         while y < r:
-            X = min(x + 512, c)
-            Y = min(y + 512, r)
+            X = min(x + tw, c)
+            Y = min(y + th, r)
             part = img[y:Y,x:X]
             imList.append((nnx, nny, part))
             nny += 1
-            y += 512
+            y += th
         nnx += 1
-        x += 512
+        x += tw
     for item in imList:
         fname = os.path.join(path, '%d,%d.png' % (item[0],item[1]))
         part = item[2]
@@ -136,7 +136,12 @@ def main():
         if cmd[0] == 'split':
             if pic is None:
                 pic = img
-            split(pic, cmd[1], int(cmd[2]), int(cmd[3]))
+            tw = 512
+            th = 512
+            if len(cmd) >= 6:
+                tw = int(cmd[4])
+                th = int(cmd[5])
+            split(pic, cmd[1], int(cmd[2]), int(cmd[3]), tw, th)
 
 if __name__ == '__main__':
     main()

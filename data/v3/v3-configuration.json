@@ -1,0 +1,55 @@
+{
+  "world": "v3",
+  "default": true,
+  "crs": {
+    "class": "L.AKM.CRS",
+    "args": [
+      {
+        "scale": 0.5,
+        "offset": [0, 0],
+        "maxZoom": 4
+      }
+    ]
+  },
+  "baselayer": {
+    "class": "L.TileLayer",
+    "args": [
+      "../data/v3/{z}/{x},{y}.png",
+      {
+        "tileSize": 512,
+        "maxZoom": 4,
+        "attribution": "Map-Data: &copy; 2018 Kedama-Koiru Monogatari, Map-Page: &copy; 2018 D.W.Carrot &amp; foraphe &amp; paizi"
+      }
+    ]
+  },
+  "overlayers": {
+    "map-marker": {
+      "class": "L.AKM.GroupedMarkerLayer",
+      "autoshow": true,
+      "args": [
+        [],
+        {
+          "url": "../data/v3/v3-markers.json",
+          "dataPrePro": "$ICON_DATAPREPRO"
+        }
+      ]
+    },
+    "user-marker": {
+      "class": "L.AKM.GroupedMarkerLayer",
+      "autoshow": true,
+      "args": [
+        [],
+        {}
+      ]
+    },
+    "chunk-mark": {
+      "class": "L.KC.BChunkMarker",
+      "autoshow": false,
+      "args": [
+        "../data/v3/v3-chunkmark.json",
+        {}
+      ]
+    }
+  }
+}
+

@@ -62,11 +62,25 @@ class SplitMap:
                         if r:
                             r = (r[0][0,0],r[0][1,0],r[0][0,1],r[0][1,1],r[1][0,0],r[1][1,0],r[1][0,1],r[1][1,1])
                             print('@load ', fpath, ' => ', r[:4])
+                            pic = numpy.float32(part[r[4]:r[5],r[6]:r[7],0:3])
+                            old = numpy.float32(self.map[r[0]:r[1],r[2]:r[3],0:3])
+                            alpha = None
                             if part.shape[2] == 3:
-                                self.map[r[0]:r[1],r[2]:r[3],:3] = part[r[4]:r[5],r[6]:r[7],:]
-                                self.map[r[0]:r[1],r[2]:r[3],3] = 255
+                                alpha = numpy.ones((pic.shape[0], pic.shape[1]), 'float32')
                             else:
-                                self.map[r[0]:r[1],r[2]:r[3],:] = part[r[4]:r[5],r[6]:r[7],:]
+                                print('RGBA')
+                                alpha = numpy.float32(part[r[4]:r[5],r[6]:r[7],3]) / 255
+                            #for vexelmap
+                            index = (pic[:,:,0] == 0) * (pic[:,:,1] == 0) * (pic[:,:,2] == 0)
+                            alpha[index] = 0
+                            if numpy.any(alpha == 0):
+                                print('uncomplete')
+                            for i in range(0, 3):
+                                h = pic[:,:,i] * alpha + old[:,:,i] * (1 - alpha)
+                                self.map[r[0]:r[1],r[2]:r[3],i] = h[:,:]
+                            h = numpy.uint8(alpha * 255)
+                            self.map[r[0]:r[1],r[2]:r[3],3] = numpy.maximum(h[:,:], self.map[r[0]:r[1],r[2]:r[3],3])
+                            
                     else:
                         print('@exception[image size]: ', fpath) 
         return self.map
@@ -121,6 +135,9 @@ class SplitMap:
         for picItem in picList:
             fname = os.path.join(path, picItem[0])
             pic = picItem[1]
+            #for vexelmap
+            index = (pic[:,:,0] == 0) * (pic[:,:,1] == 0) * (pic[:,:,2] == 0)
+            pic[index, 3] = 0
             if numpy.all(pic[:,:,3] > 127):
                 pic = pic[:,:,0:3];
             old = cv2.imread(fname, cv2.IMREAD_UNCHANGED)

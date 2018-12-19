@@ -1,5 +1,274 @@
 // JavaScript source code
 
+// load resources
+(function() {
+	
+	Class.loadScript("https://unpkg.com/leaflet@1.3.4/dist/leaflet-src.js", "sha512-+ZaXMZ7sjFMiCigvm8WjllFy6g3aou3+GZngAtugLzrmPFKFK7yjSri0XnElvCTu/PrifAYQuxZTybAEkA8VOA==", 1);
+	Class.loadStyle("https://unpkg.com/leaflet@1.3.4/dist/leaflet.css", "sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==", 1);
+	Class.loadScript("plugin/Leaflet.AKM.Util.js", undefined, 2);
+	Class.loadScript("plugin/Leaflet.AKM.CRS.js", undefined, 3);
+	Class.loadScript("plugin/Leaflet.AKM.BindedLayerControl.js", undefined, 3);
+	Class.loadScript("plugin/Leaflet.AKM.GroupedMarkerLayer.js", undefined, 3);
+	Class.loadScript("plugin/Leaflet.AKM.ScaleControl.js", undefined, 3);
+	Class.loadScript("plugin/Leaflet.AKM.VMenuControl.js", undefined, 3);
+	Class.loadScript("lib/Leaflet.Dialog.js", undefined, 3);
+	Class.loadStyle("lib/Leaflet.Dialog.css", undefined, 3);
+	Class.loadStyle("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css", "sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7", 3);
+	Class.loadStyle("https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css", undefined, 3);
+	Class.loadScript("leaflet-kedama_craft_map-plugins.js", undefined, 3);
+	Class.startTask(function() {
+	
+		L.AKM.Util.addStyle('.leaflet-control-layers-list {text-align: left;}');
+		
+		/*it works. why?*/
+		var searchDialog = function(map, data) {
+			let dom = document.createElement("div");
+			dom.className = "search-dialog-body"
+			let c1 = document.createElement("div");
+			dom.appendChild(c1);
+			let c2_0 = document.createElement("span");
+			c2_0.innerText = "标记点名称:  ";
+			c1.appendChild(c2_0);
+			let c2 = document.createElement("input");
+			c1.appendChild(c2);
+			let c4 = document.createElement("div");
+			dom.appendChild(c4);
+			let c5 = document.createElement("table");
+			c4.appendChild(c5);
+			c2.addEventListener("input", function(e) {
+				if(e.target.value == '')
+					return;
+				c5.innerHTML = "";
+				let res = new Array();
+				let key = e.target.value;
+				data.forEach(function(obj) {
+					if(obj.title.indexOf(key) >= 0)
+						res.push(obj);
+				});
+				for (let i = 0; i < res.length; i++) {
+					let t = document.createElement("tr");
+					t.marker = res[i];
+					let d = [];
+					for(let n = 0; n < 4; ++n)
+						t.appendChild(d[n] = document.createElement("td"));
+					d[0].innerText = t.marker.title;
+					d[1].innerText = t.marker.x + ',' + t.marker.z;
+					d[2].innerText = '跳转'
+					d[2].className = 'td-btn'
+					d[2].addEventListener("click", function(e) {
+						let marker = e.target.parentNode.marker;
+						map.setView([marker.z, marker.x], map.getMaxZoom());
+					});
+					d[3].innerText = '复制'
+					d[3].className = 'td-btn'
+					d[3].addEventListener("click", function(e) {
+						let marker = e.target.parentNode.marker;
+						let s = JSON.stringify(marker);
+						if(L.AKM.Util.clipboard(s)) {
+							e.target.style.backgroundColor = "#AFD";
+							setTimeout(function(){e.target.style.backgroundColor = "";},1000);
+						};
+					});
+					c5.appendChild(t);
+				}
+			});
+			let c3 = document.createElement("hr")
+			dom.appendChild(c3);
+			return dom;
+		}
+		
+		var icons = (function() {
+			this.icons = {};
+			for(var i = 1; i <= 16; ++i) {
+				var name = 'settlement-' + i;
+				this.icons[name] = L.icon({
+					iconUrl: 'banner_icon_' + i + '.png',
+					iconSize: [25, 41], // size of the icon
+					iconAnchor: [13, 41], // point of the icon which will correspond to marker's location
+					popupAnchor: [0, -16] // point from which the popup should open relative to the iconAnchor
+				});
+			}
+			var nList = ['-', 'building', 'world', 'facility', 'settlement', 'reserved', 'pointer']
+			for(var i = 1; i <= 6; ++i) {
+				var name = nList[i];
+				this.icons[name] = L.icon({
+					iconUrl: 'marker-icon-' + i + 'x.png',
+					iconSize: [20, 32.8], // size of the icon
+					iconAnchor: [10.5, 32.8], // point of the icon which will correspond to marker's location
+					popupAnchor: [0, -18] // point from which the popup should open relative to the iconAnchor
+				});
+			}
+			return this.icons;
+		})();
+		
+		console.debug(icons);
+		
+		var dynamicAdd = function(url, controller) {
+			L.AKM.Util.getJSON(
+				url,
+				function(data) {
+					var unit;
+					unit = data.crs;
+					controller.registerCRS(Class.forName(unit.class).newInstance(unit.args), data.world);
+					unit = data.baselayer;
+					controller.registerBaseLayer(Class.forName(unit.class).newInstance(unit.args), data.world);
+					for(var p in data.overlayers) {
+						unit = data.overlayers[p];
+						switch(unit.class) {
+							case "L.AKM.GroupedMarkerLayer":
+								if(unit.args[1].dataPrePro === "$ICON_DATAPREPRO") {
+									unit.args[1].dataPrePro = function(markerData) {
+										markerData.forEach(function(r) {
+											if(r.icon && icons)
+												r.icon = icons[r.icon]
+											if(!r.icon)
+												delete r.icon;
+										});
+										return markerData;
+									}
+								}
+								break;
+						}
+						controller.registerOverlay(Class.forName(unit.class).newInstance(unit.args), p, data.world, unit.autoshow);
+					}
+					if(data.default) {
+						setTimeout(function() {controller.addToMap(data.world);}, 100);
+					}
+					var style = document.querySelector("#map").style;
+					style.backgroundColor = "black";
+					style.cursor = "default";
+				},
+				undefined,
+				undefined,
+				undefined,
+				true
+			)
+		}
+		
+		//main
+		
+		var map = new L.Map('map', {
+			renderer: L.canvas({ padding: 0.01 }),
+			zoomSnap: 0.05,
+			zoomDelta: 0.25,
+			closePopupOnClick: true
+		}).setView([0,0],-1);
+		
+		map.on('mousemove', function(event) {
+			this.innerText = L.AKM.Util.basicPonterFormatter(event.latlng);
+		}, document.querySelector("#debug"));
+		
+		var ctrl = new L.AKM.BindedLayerControl().addTo(map);
+		
+		L.AKM.Util.getJSON(
+			"index.json", 
+			function(data) {
+			data.forEach(function(url) {
+				dynamicAdd(url, ctrl);
+			}),
+			undefined,
+			undefined,
+			undefined,
+			true
+		});
+		
+		//common layer: MenuControl
+		var dialog = L.control.dialog({maxSize:[innerWidth / 2, innerHeight / 2]});
+		
+		var menuControl = new L.AKM.VMenuControl('MENU', [
+			{
+				title: 'Help',
+				callback: function () {
+					let dom = document.createElement('div');
+					dom.innerHTML = '<table style="text-align:left;">'
+						+ '<tr><td>+ / - / 鼠标滚轮</td><td>缩放</td></tr>'
+						+ '<tr><td>LayerControl-markers</td><td>显示/隐藏标记点</td></tr>'
+						+ '<tr><td>Menu-Marking</td><td>开启/关闭标记点操作</td></tr>'
+						+ '<tr><td>鼠标左键</td><td>显示/隐藏提示、放置/取消放置标记点</td></tr>'
+						+ '<tr><td>Menu-Search</td><td>搜索标记点，可根据搜索结果索引跳转</td></tr>'
+						+ '</table>';
+					dialog.setContent(dom).addTo(map);
+				}
+			}, {
+				title: "Search",
+				callback: function () {
+					try {
+						dialog.setContent(searchDialog(map, ctrl.getCurrent().overlayers.selected['map-marker'].getMarkers())).addTo(map);
+					} catch(e) {
+						console.debug(e);
+					}
+				},
+			}, {
+				title: "Marker",
+				sub: [{
+						title: 'on/off',
+						callback: function (e) {
+							try {
+								var userMarkersLayer = ctrl.getCurrent().overlayers.selected['user-marker'];
+								if (userMarkersLayer.canEdit()) {
+									userMarkersLayer.disableEdit();
+									e.target._AKMvm_p.style.backgroundColor = "";
+								} else {
+									e.target._AKMvm_p.style.backgroundColor = "#AFD";
+									userMarkersLayer.enableEdit();
+								}
+							} catch(err) {
+								console.debug(err);
+							}
+						}
+					}, {
+						title: "SetMark",
+						callback: function() {
+							try {
+								var userMarkersLayer = ctrl.getCurrent().overlayers.selected['user-marker'];
+								if(userMarkersLayer) {
+									try {
+										var s = prompt('标记点位置: ', '0,0');
+										s = s.split(',');
+										userMarkersLayer.addMarker({title: '', x: Number.parseFloat(s[0]), z: Number.parseFloat(s[1])}, true);
+										map.setView(L.latLng(s[1], s[0]), map.getMaxZoom());
+									} catch(e) {
+										alert(e);
+									}
+								}
+							} catch(err) {
+								console.debug(err);
+							}
+						},
+					}
+				]
+				
+			}, {
+				title: "About",
+				callback: function () {
+					alert('推荐功能更完善的地图版本\n[jsw YAKM](https://kedama-map.jsw3286.eu.org/');
+					var cet = document.createElement("center");
+					var p = document.createElement("p");
+					var warn = document.createTextNode("此条目正在开发中...");
+					cet.appendChild(warn);
+					dialog.setContent(cet.innerHTML).addTo(map);
+				},
+			}
+		]).addTo(map);
+		
+		var scaleControl = new L.AKM.ScaleControl().addTo(map);
+		
+		try {
+			console.log('hook => ', {map, ctrl});
+		} catch(e) {
+			console.warn(e);
+		} 
+	});
+})();
+
+
+
+//======================================================================================
+//======================================================================================
+// unused code
+//======================================================================================
+//======================================================================================
+function unused2() {
 window.onload = function() {
 	
 	function loadIcon(mapUtil) {
@@ -282,7 +551,7 @@ window.onload = function() {
 	_hook = {map: map, util: mapUtil, mgr: mgr};
 	
 }
-
+}
 
 //======================================================================================
 //======================================================================================
