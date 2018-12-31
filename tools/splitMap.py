@@ -71,7 +71,7 @@ class SplitMap:
                                 print('RGBA')
                                 alpha = numpy.float32(part[r[4]:r[5],r[6]:r[7],3]) / 255
                             #for vexelmap
-                            index = (pic[:,:,0] == 0) * (pic[:,:,1] == 0) * (pic[:,:,2] == 0)
+                            index = numpy.logical_and(pic[:,:,0] == 0, numpy.logical_and(pic[:,:,1] == 0, pic[:,:,2] == 0))
                             alpha[index] = 0
                             if numpy.any(alpha == 0):
                                 print('uncomplete')
@@ -136,7 +136,7 @@ class SplitMap:
             fname = os.path.join(path, picItem[0])
             pic = picItem[1]
             #for vexelmap
-            index = (pic[:,:,0] == 0) * (pic[:,:,1] == 0) * (pic[:,:,2] == 0)
+            index = numpy.logical_and(pic[:,:,0] == 0, numpy.logical_and(pic[:,:,1] == 0, pic[:,:,2] == 0))
             pic[index, 3] = 0
             if numpy.all(pic[:,:,3] > 127):
                 pic = pic[:,:,0:3];

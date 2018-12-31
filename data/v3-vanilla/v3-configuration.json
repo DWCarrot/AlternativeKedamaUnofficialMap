@@ -24,13 +24,13 @@
   },
   "overlayers": {
     "map-marker": {
-      "class": "L.AKM.GroupedMarkerLayer",
+      "class": "L.AKM.MarkerControlLayer",
       "autoshow": true,
       "args": [
-        [],
+        "../data/v3/v3-markers.json",
         {
-          "url": "../data/v3/v3-markers.json",
-          "dataPrePro": "$ICON_DATAPREPRO"
+          "searchUI": "$SEARCH_UI",
+          "editUI": "$EDIT_UI"
         }
       ]
     },
@@ -39,14 +39,6 @@
       "autoshow": true,
       "args": [
         [],
-        {}
-      ]
-    },
-    "chunk-mark": {
-      "class": "L.KC.BChunkMarker",
-      "autoshow": false,
-      "args": [
-        "../data/v3/v3-chunkmark.json",
         {}
       ]
     }

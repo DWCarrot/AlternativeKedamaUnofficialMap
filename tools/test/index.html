@@ -9,6 +9,50 @@
 		
 		
 	</body>
+	<script>
+		var gen1 = function(len) {
+			var res = {};
+			res.layer = {};
+			for(var i = 0; i < len; ++i) {
+				var id = Math.round(1 / Math.random());
+				res.layer[id] = Math.random();
+			}
+			res.obj = {};
+			for(var i = 0; i < len; ++i) {
+				var id = Math.round(1 / Math.random());
+				res.obj[id] = Math.random();
+			}
+			return res;
+		}
+		var gen2 = function(len) {
+			var res = {};
+			for(var i = 0; i < len; ++i) {
+				var id = Math.round(1 / Math.random());
+				res[id] = {layer: Math.random(), obj: Math.random()};
+			}
+			return res;
+		}
+		var load = function(canvas) {
+			canvas.width = 640;
+			canvas.height = 128;
+			let ctx = canvas.getContext("2d");
+			let f = ["地图-地标","删除","编辑","搜索放大","云端上传"];
+			let imgs = new Array();
+			for(let i = 0; i < 5; ++i) {
+				let img = new Image();
+				img.posx = i * 128 + (128-80)/2;
+				img.posy = (128-80)/2;
+				img.posw = 80;
+				img.posh = 80;
+				img.src = f[i] + ".svg";
+				img.onload = (event) => {
+					let img1 = event.target;
+					console.log(img1);
+					ctx.drawImage(img1, img1.posx, img1.posy, img1.posw, img1.posh);
+				};
+			}
+		}
+	</script>
 	<script type="module" src="./index.js"></script>
 	<script type="module" src="./module-test.js"></script>
 </html>

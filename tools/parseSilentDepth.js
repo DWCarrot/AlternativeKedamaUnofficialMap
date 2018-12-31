@@ -51,3 +51,39 @@ function download(res) {
 	document.querySelector('body').appendChild(a);
 	return a;
 }
+
+function sColor2RGB(color) {
+	if(this.canvas === undefined) {
+		this.canvas = document.createElement("canvas");
+		this.canvas.width = 16;
+		this.canvas.height = 16;
+	}
+	let ctx = this.canvas.getContext("2d");
+	ctx.fillStyle = color;
+	ctx.fillRect(0, 0, 16, 16);
+	let idata = ctx.getImageData(0,0,1,1);
+	return idata.data;
+}
+
+function draw(res) {
+	let w = 256, h = 256;
+	let canvas = document.createElement("canvas");
+	canvas.width = w;
+	canvas.height = h;
+	let ctx = canvas.getContext("2d");
+	let img = ctx.getImageData(0, 0, w, h);
+	let mat = img.data;
+	for(let prop in res) {
+		let elem = res[prop];
+		let color = sColor2RGB(elem.color);
+		elem.area.forEach(function(block) {
+			let i = (block.cx + w / 2 + (block.cz + h / 2) * w) * 4; 
+			mat[i + 0] = color[0];
+			mat[i + 1] = color[1];
+			mat[i + 2] = color[2];
+			mat[i + 3] = color[3];
+		});
+	}
+	ctx.putImageData(img, 0, 0);
+	return canvas;
+}

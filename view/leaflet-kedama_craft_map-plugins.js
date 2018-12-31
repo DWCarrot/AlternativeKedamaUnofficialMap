@@ -104,10 +104,14 @@ L.KC.ChunkMarker = L.LayerGroup.extend({
 		} else {
 			L.AKM.Util.getJSON(
 				chunkMarkerList,
-				function(data, that) {
-					that._list = data;
+				function(data) {
+					this._list = data;
 				},
-				this
+				this,
+				undefined,
+				undefined,
+				true,
+				5000
 			)
 		}
 		this.selectedIndex = undefined;
@@ -491,6 +495,38 @@ L.KC.BChunkMarker = L.KC.ChunkMarker.extend({
 		btn.source = this._list;
 		return form;
 	}
+});
+
+
+L.KC.ShowVertex = L.LayerGroup.extend({
+	
+	initialize: function(url, options) {
+		L.AKM.Util.getJSON(
+			url,
+			function(data) {
+				this._list = data;
+			},
+			this,
+			undefined,
+			undefined,
+			true,
+			5000
+		)
+		L.LayerGroup.prototype.initialize.call(this, [], options);
+	},
+	
+	onAdd: function(map) {
+		var ls = new Array();
+		for(var prop in this._list) {
+			var r = this._list[prop];
+			this.addLayer(new L.Polygon(r.vertex, {stroke: false, fill: true, fillColor: r.color, fillOpacity: 0.75}));
+		}
+	},
+	
+	onRemove: function(map) {
+		this.clearLayers();
+	}
+	
 });
 
 //global initialize

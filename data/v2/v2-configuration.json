@@ -23,13 +23,13 @@
   },
   "overlayers": {
     "map-marker": {
-      "class": "L.AKM.GroupedMarkerLayer",
+      "class": "L.AKM.MarkerControlLayer",
       "autoshow": true,
       "args": [
-        [],
+        "../data/v2/v2-markers.json",
         {
-          "url": "../data/v2/v2-markers.json",
-          "dataPrePro": "$ICON_DATAPREPRO"
+          "searchUI": "$SEARCH_UI",
+          "editUI": "$EDIT_UI"
         }
       ]
     },

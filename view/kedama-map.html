@@ -45,6 +45,7 @@
 	<script type="text/javascript" src="Class.js"></script>
 	<script type="text/javascript" src="kedama-map.js"></script>
 	
+	<!--
 	<div id="template-popup-01" hidden="hidden">
 		<div style="font-weight:bold;">{title}</div>
 	</div>
@@ -65,6 +66,63 @@
 			<div>{inner}</div>
 		</div>
 	</div>
+	-->
+	
+	<template id="help-template">
+		<div>Help &amp; About</div>
+		<hr class="normal-hr" />
+		<div style="color: #cccccc;">emmm没写完<br/>请自行尝试(((</div>
+	</template>
+	
+	<template id="template-02">
+		<div class="dialog-edit-container">
+			<div class="dialog-head">
+				<span>编辑标记</span>
+			</div>
+			<hr class="normal-hr" />
+			<div class="dialog-edit-body">
+				<table class="dialog-edit-table">
+					<tr>
+						<td>title</td>
+						<td>
+							<input name="title" type="text" v-bind:value="marker.title" v-on:change="oc_marker_change" />
+						</td>
+					</tr>
+					<tr>
+						<td>x</td>
+						<td>
+							<input name="x" type="number" v-bind:value="marker.x" v-on:change="oc_marker_change" />
+						</td>
+					</tr>
+					<tr>
+						<td>z</td>
+						<td>
+							<input name="z" type="number" v-bind:value="marker.z" v-on:change="oc_marker_change" />
+						</td>
+					</tr>
+					<tr>
+						<td>icon</td>
+						<td>
+							<select name="icon" type="text" v-bind:value="marker.icon" v-on:change="oc_marker_change" >
+								<option value=""></option>
+								<option v-for="(icon, iconName) in icons" v-bind:value="iconName">{{ iconName }}</option>
+							</select>
+							<img class="dialog-edit-iconShow" v-bind:src="iconUrl" />
+						</td>
+					</tr>
+					<tr>
+						<td>description</td>
+						<td>
+							<textarea name="description" v-bind:value="marker.description" v-on:change="oc_marker_change" />
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</template>
+	
+	
 	
 </body>
+
 </html>

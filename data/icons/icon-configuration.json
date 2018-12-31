@@ -1,0 +1,44 @@
+{
+  "*": {
+    "iconUrl": "../data/icons/marker-icon-0x.png",
+    "iconSize": [20,32.8],
+    "iconAnchor": [10.5,32.8],
+    "popupAnchor": [0,-18]
+  },
+  "building": {
+    "iconUrl": "../data/icons/marker-icon-1x.png",
+    "iconSize": [20,32.8],
+    "iconAnchor": [10.5,32.8],
+    "popupAnchor": [0,-18]
+  },
+  "world": {
+    "iconUrl": "../data/icons/marker-icon-2x.png",
+    "iconSize": [20,32.8],
+    "iconAnchor": [10.5,32.8],
+    "popupAnchor": [0,-18]
+  },
+  "facility": {
+    "iconUrl": "../data/icons/marker-icon-3x.png",
+    "iconSize": [20,32.8],
+    "iconAnchor": [10.5,32.8],
+    "popupAnchor": [0,-18]
+  },
+  "settlement": {
+    "iconUrl": "../data/icons/marker-icon-4x.png",
+    "iconSize": [20,32.8],
+    "iconAnchor": [10.5,32.8],
+    "popupAnchor": [0,-18]
+  },
+  "reserved": {
+    "iconUrl": "../data/icons/marker-icon-5x.png",
+    "iconSize": [20,32.8],
+    "iconAnchor": [10.5,32.8],
+    "popupAnchor": [0,-18]
+  },
+  "pointer": {
+    "iconUrl": "../data/icons/marker-icon-6x.png",
+    "iconSize": [20,32.8],
+    "iconAnchor": [10.5,32.8],
+    "popupAnchor": [0,-18]
+  }
+}

@@ -79,6 +79,46 @@ html {
 	background-color: #f4f4f4;
 }
 
+.search-dialog-body >hr,
+.leaflet-popup-content >hr {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.dialog-edit-iconShow {
+	height: 16px;
+}
+
+.leaflet-control-layers-list {
+	text-align: left;
+}
+
 #map {
 	cursor: default;
+}
+
+.pointer-point-x,
+.pointer-point-z,
+.pointer-point-chunk {
+	font: 16px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+	padding-left: 5px;
+}
+
+.help-and-about-icon {
+	width: 20px;
+	height: 20px;
+	margin: 3px;
+	background-color: white;
+}
+
+.help-and-about-icon2 {
+	width: 26px;
+	height: 26px;
+	background-image: url("lib/help&about.svg");
+	background-size: 26px, 26px;
+}
+
+.easy-button-button {
+	padding-left: 0px;
+	padding-right: 0px;
 }

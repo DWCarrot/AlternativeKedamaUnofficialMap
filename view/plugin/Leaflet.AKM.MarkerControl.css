@@ -1,0 +1,11 @@
+
+.leaflet-control-markers > a {
+	background-image: url('Leaflet.AKM.MarkerControl-icon.png');
+	background-repeat: no-repeat;
+	background-origin: border-box;
+	background-clip: border-box;
+	background-size: auto 100%;
+}
+.leaflet-control-markers-selected {
+	background-color: #aabbcc !important;
+}
