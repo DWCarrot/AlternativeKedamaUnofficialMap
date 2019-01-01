@@ -353,20 +353,23 @@
 		*/
 		let scaleControl = new L.AKM.ScaleControl().addTo(map);
 		
-		let drawnItems = L.featureGroup().addTo(map);
+		//leaflet-draw: temporarily add for overworld-railway project {
+		
+		let drawnItems = new L.GeoJSON().addTo(map);
 		
 		let drawControl = new L.Control.Draw({
 			edit: {
 				featureGroup: drawnItems,
 				poly: {
 					allowIntersection: false
-				}
+				},
+				
 			},
 			draw: {
 				polygon: {
 					allowIntersection: false,
 					showArea: true
-				}
+				},
 			}
 		}).addTo(map);
 		
@@ -377,8 +380,47 @@
 			drawnItems.addLayer(layer);
 		});
 		
+		let loadGeo = new L.Control.EasyButton(
+			'<img src="load-is.svg" class="help-and-about-icon"></img>',
+			function() {
+				let s = prompt('请粘贴GeoJSON');
+				try {
+					s = JSON.parse(s);
+					drawnItems.addData(s);
+				} catch(e) {
+					if(s)
+						console.warn(e);
+				}
+			},
+			'由GeoJSON加载绘图',
+			null,
+			{
+				position: 'topleft',
+				tagName: 'a',
+			}
+		);
+		
+		let saveGeo = new L.Control.EasyButton(
+			'<img src="save-is.svg" class="help-and-about-icon"></img>',
+			function() {
+				let s = drawnItems.toGeoJSON();
+				L.AKM.Util.simulateUpload(s);
+			},
+			'保存绘图为GeoJSON',
+			null,
+			{
+				position: 'topleft',
+				tagName: 'a',
+			}
+		);
+		
+		let ebbar = L.easyBar([ loadGeo, saveGeo]).addTo(map);
+		
+		//}
+		
+		
 		if(!L.Browser.ie) {
-			(new Function('map', 'ctrl', 'dialog', 'console.log("hook => ", {map, ctrl, dialog})'))(map, ctrl, dialog);
+			eval('console.log("hook => ", {map, ctrl, dialog, drawnItems})');
 		}
 	});
 })();

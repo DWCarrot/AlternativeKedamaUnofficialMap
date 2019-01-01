@@ -16,6 +16,7 @@
 			this.el = document.createElement("div");
 			this.el.innerHTML = template.innerHTML;
 			this.vm = new Vue(vue);
+			this.vm.$llayer = this;
 		},
 		
 		onAdd: function(map) {
@@ -29,7 +30,14 @@
 		},
 		
 		onRemove: function(map) {
-			
+			this.el.remove();
+		},
+		
+		remove: function() {
+			if(this._map) {
+				var that = this;
+				setTimeout(function() {that._map.removeControl(that)}, 1);
+			}
 		},
 	});
 	

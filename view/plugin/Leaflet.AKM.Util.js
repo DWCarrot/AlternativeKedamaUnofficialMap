@@ -306,7 +306,8 @@
 			var blob = new Blob([JSON.stringify(data)],{type: "application/json"});
 			var url = URL.createObjectURL(blob);
 			w = open(url);
-			setTimeout(function() {context.load();}, 5000);
+			if(context && context.load instanceof Function)
+				setTimeout(function() {context.load();}, 5000);
 		},
 		
 		geo_getCenter: function(latlngs) {
