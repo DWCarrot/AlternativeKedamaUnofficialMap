@@ -11,7 +11,7 @@
 	Class.loadScript("plugin/Leaflet.AKM.Util.js", undefined, 2);
 	Class.loadScript("plugin/Leaflet.AKM.CRS.js", undefined, 3);
 	Class.loadScript("plugin/Leaflet.AKM.BindedLayerControl.js", undefined, 3);
-	Class.loadScript("plugin/Leaflet.AKM.GroupedMarkerLayer.js", undefined, 3);
+//	Class.loadScript("plugin/Leaflet.AKM.GroupedMarkerLayer.js", undefined, 3);
 	Class.loadScript("plugin/Leaflet.AKM.ScaleControl.js", undefined, 3);
 //	Class.loadScript("plugin/Leaflet.AKM.VMenuControl.js", undefined, 3);
 //	Class.loadStyle("plugin/Leaflet.AKM.VMenuControl.css", undefined);
@@ -25,8 +25,21 @@
 	Class.loadStyle("lib/easy-button.css", undefined);
 	Class.loadScript("leaflet-kedama_craft_map-plugins.js", undefined, 3);
 	Class.startTask(function() {
-		
-		
+	
+		L.AKM.Util.simulateUpload = function(data, context) {
+			var str = data ? JSON.stringify(data) : "";
+			if(L.AKM.Util.clipboard(str)) {
+				alert(String.prototype.concat.call(
+					"emmmm并没有服务器能接受上传数据\n\r",
+					"emmmm因为并没有服务器QAQ\n\r",
+					"数据已经以文本格式复制到剪切板上了，可以在别的地方右键粘贴\n\r",
+					"比如找RDCarrot/jsw/SilentDepth等等 或者粘到论坛上（"
+				))
+				if(context && context.load instanceof Function)
+					setTimeout(function() {context.load();}, 5000);
+			}
+		}
+	
 		let searchDialog = function(map, data) {
 			let dom = document.createElement("div");
 			dom.id = "search_dialog";
@@ -86,7 +99,7 @@
 			dom.appendChild(c3);
 			return dom;
 		}
-		
+
 		let icons = {};
 		L.AKM.Util.getJSON(
 			"../data/icons/icon-configuration.json",
@@ -149,6 +162,12 @@
 		
 		Class.registerVar(
 			"L.AKM.MarkerControlLayer",
+			"$PUSH_OP",
+			L.AKM.Util.simulateUpload
+		);
+		
+		Class.registerVar(
+			"L.AKM.MarkerControlLayer",
 			"$EDIT_UI",
 			function(marker, markerObj, ctrl) {
 				try {
@@ -162,16 +181,17 @@
 						el: "#" + dom.id,
 						data: {
 							marker: markerObj,
+							iconUrl: new String(markerObj.icon in icons ? icons[markerObj.icon].options.iconUrl : ""),
 						},
 						computed: {
 							icons: function() {return icons;},
-							iconUrl: function() {return this.marker.icon in this.icons ? this.icons[this.marker.icon].options.iconUrl : "";},
 						},
 						methods: {
 							oc_marker_change: function(event) {
 								let t = event.target;
 								this.marker[t.name] = t.value;
 								changed = true;
+								this.iconUrl = this.marker.icon in this.icons ? this.icons[this.marker.icon].options.iconUrl : "";
 							},
 						},
 						destroyed: function() {
@@ -742,13 +762,13 @@ function KedamaMap() {
 	this.util = new MinecraftMapUtil();
 
 	/** properties **/
-	this.map = null;							//	leaflet map
-	this.data = { attribution:"", marks:[]};	//	json data
-	this.showMarkers = false;	//	L.markers & whether to show it
+	this.map = null;                            //  leaflet map
+	this.data = { attribution:"", marks:[]};    //  json data
+	this.showMarkers = false;   //  L.markers & whether to show it
 	this.layerSMarker = null;
 	this.layerMarker = null;
 	this.layerMap = {};
-	this.icons = [];							//	L.icons from icon pictures
+	this.icons = [];                            //  L.icons from icon pictures
 	this.keyPressed = new Array(256);
 	this.onClickCallbacks = {};
 	this.lastUserMarker = null;
@@ -798,19 +818,19 @@ function KedamaMap() {
 		
 		document.getElementById(id).onkeydown = function(e) {
 			e = e || event;
-　　 　 	that.keyPressed[e.keyCode] = e;
+　　 　    that.keyPressed[e.keyCode] = e;
 			console.debug('[down] ', e.key);
 		}
 		document.getElementById(id).onkeyup = function(e) {
 			e = e || event;
-　　 　 	that.keyPressed[e.keyCode] = null;
+　　 　    that.keyPressed[e.keyCode] = null;
 			console.debug('[up  ] ', e.key);
 		}
 	};
 
 	this.registerMap = function (world, pathroot, tileOptions) {
 		this.layerMap[world] = this.util.TileLayer(pathroot, tileOptions).addTo(this.map);
-//		this.layerMap[world] = L.tileLayer(pathroot, tileOptions).addTo(this.map);
+//      this.layerMap[world] = L.tileLayer(pathroot, tileOptions).addTo(this.map);
 		this.util.ScaleControl({
 			maxWidth: 100
 		}).addTo(this.map);
@@ -840,7 +860,7 @@ function KedamaMap() {
 			);
 		}
 		
-	/*	this.onClickCallbacks.showMarks = function(event) {
+	/*  this.onClickCallbacks.showMarks = function(event) {
 			if(that.keyPressed[key]) {
 				if(that.showMarkers) {
 					that.showMarkers = false;
@@ -851,7 +871,7 @@ function KedamaMap() {
 				}
 			}
 		};*/
-	};	
+	};  
 
 	this.registerUserMarks = function() {
 		let key = 18;
@@ -870,7 +890,7 @@ function KedamaMap() {
 				mark.on('click', function() {
 					if(that.keyPressed[key]) {
 						that.layerMarker.removeLayer(mark);
-//						that.keyPressed[key] = null;
+//                      that.keyPressed[key] = null;
 					}
 				});
 				that.layerMarker.addLayer(mark);
@@ -894,16 +914,16 @@ function KedamaMap() {
 	/** API **/
 	
 	/**
-	 *	`map.setView(<number:x>,<number:z>)`
-	 *	move to position(x,z)
+	 *  `map.setView(<number:x>,<number:z>)`
+	 *  move to position(x,z)
 	 */
 	this.setView = function(x, z) {
 		this.map.setView([z, x], this.map.getMaxZoom());
 	};
 	
 	/**
-	 *	`map.getStaticMarks()`
-	 *	get an array of static marks in form of `[{title:$title, x:$x, z:$z},...]` 
+	 *  `map.getStaticMarks()`
+	 *  get an array of static marks in form of `[{title:$title, x:$x, z:$z},...]` 
 	 */
 	this.getStaticMarks = function() {
 		let res = [];
@@ -920,8 +940,8 @@ function KedamaMap() {
 	};
 	
 	/**
-	 *	`map.getUserMarks()`
-	 *	get an array of user marks in form of `[{title:$index, x:$x, z:$z},...]`
+	 *  `map.getUserMarks()`
+	 *  get an array of user marks in form of `[{title:$index, x:$x, z:$z},...]`
 	 */
 	this.getUserMarks = function() {
 		let res = [];
@@ -938,8 +958,8 @@ function KedamaMap() {
 	};
 
 	/**
-	 *	`map.searchMarks(<string:keyword>)`
-	 *	search the static mark list for marks whose title contain keyword
+	 *  `map.searchMarks(<string:keyword>)`
+	 *  search the static mark list for marks whose title contain keyword
 	 */
 	this.searchMarks = function(keyword) {
 		let res = [];
@@ -957,8 +977,8 @@ function KedamaMap() {
 	};
 	
 	/**
-	 *	`map.setMark(<number:x>,<number:z>,<optional string:title>,<optional int:icon>)`
-	 *	set a mark at position(x,z)
+	 *  `map.setMark(<number:x>,<number:z>,<optional string:title>,<optional int:icon>)`
+	 *  set a mark at position(x,z)
 	 */
 	this.setMark = function(x, z, title, icon) {
 		let key = 18;
@@ -975,8 +995,8 @@ function KedamaMap() {
 	};
 	
 	/**
-	 *	`new map.Dialog(<optional HTMLElement:htmlElement>,<optional string:title>)`
-	 *	create an Dialog with a close button to display HTMLElement
+	 *  `new map.Dialog(<optional HTMLElement:htmlElement>,<optional string:title>)`
+	 *  create an Dialog with a close button to display HTMLElement
 	 */
 	this.dialog = function(htmlElement, title) {
 		if(!title)

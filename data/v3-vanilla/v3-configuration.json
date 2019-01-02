@@ -18,7 +18,7 @@
       {
         "tileSize": 512,
         "maxZoom": 3,
-        "attribution": "Map-Data: &copy; 2018 Kedama-Koiru Monogatari, Map-Page: &copy; 2018 D.W.Carrot &amp; foraphe &amp; paizi"
+        "attribution": "&copy; 2018 <a href=\"https://www.craft.moe\">Kedama-Koiru Monogatari</a>"
       }
     ]
   },
@@ -30,16 +30,9 @@
         "../data/v3/v3-markers.json",
         {
           "searchUI": "$SEARCH_UI",
-          "editUI": "$EDIT_UI"
+          "editUI": "$EDIT_UI",
+          "pushOperation": "$PUSH_OP"
         }
-      ]
-    },
-    "user-marker": {
-      "class": "L.AKM.GroupedMarkerLayer",
-      "autoshow": true,
-      "args": [
-        [],
-        {}
       ]
     }
   }

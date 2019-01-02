@@ -10,7 +10,17 @@
 		
 		options: {
 			
-			position: 'topright',
+			position: "topright",
+			
+			buttonSize: 30,
+			
+			buttonTitle: {
+				add: "Add one marker",
+				remove: "Remove selected marker",
+				edit: "Edit selected marker",
+				search: "Search markers",
+				push: "Upload changes to server",
+			},
 			
 			/**
 			 * @option markerFactory	<Function> (<MarkerObj>) => (<L.Marker>)
@@ -213,12 +223,13 @@
 		},
 		
 		_onAddControl: function(map) {
-			var w = 26;
+			var w = this.options.buttonSize;
+			var tips = this.options.buttonTitle;
 			this._control = L.DomUtil.create("div", "leaflet-control-markers leaflet-bar leaflet-control");
 			var add = L.DomUtil.create("a", "leaflet-control-markers-add", this._control);
 			add.name = "add";
 			add.href = "#";
-			add.title = "Add one marker";
+			add.title = tips.add;
 			add.style.width = String(w) + "px";
 			add.style.height = String(w) + "px";
 			add.style.backgroundPositionX = String(-(w * 0)) + "px";
@@ -226,7 +237,7 @@
 			var remove = L.DomUtil.create("a", "leaflet-control-markers-remove", this._control);
 			remove.name = "remove"
 			remove.href = "#";
-			remove.title = "Remove selected marker";
+			remove.title = tips.remove;
 			remove.style.width = String(w) + "px";
 			remove.style.height = String(w) + "px";
 			remove.style.backgroundPositionX = String(-(w * 1)) + "px";
@@ -234,7 +245,7 @@
 			var edit = L.DomUtil.create("a", "leaflet-control-markers-edit", this._control);
 			edit.name = "edit";
 			edit.href = "#";
-			edit.title = "Edit selected marker";
+			edit.title = tips.edit;
 			edit.style.width = String(w) + "px";
 			edit.style.height = String(w) + "px";
 			edit.style.backgroundPositionX = String(-(w * 2)) + "px";
@@ -242,7 +253,7 @@
 			var search = L.DomUtil.create("a", "leaflet-control-markers-search", this._control);
 			search.name = "search";
 			search.href = "#";
-			search.title = "Search markers";
+			search.title = tips.search;
 			search.style.width = String(w) + "px";
 			search.style.height = String(w) + "px";
 			search.style.backgroundPositionX = String(-(w * 3)) + "px";
@@ -250,7 +261,7 @@
 			var push = L.DomUtil.create("a", "leaflet-control-markers-push", this._control);
 			push.name = "push";
 			push.href = "#";
-			push.title = "Push changes to server";
+			push.title = tips.push;
 			push.style.width = String(w) + "px";
 			push.style.height = String(w) + "px";
 			push.style.backgroundPositionX = String(-(w * 4)) + "px";

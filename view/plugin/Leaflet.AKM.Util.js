@@ -303,11 +303,12 @@
 		},
 		
 		simulateUpload: function(data, context) {
-			var blob = new Blob([JSON.stringify(data)],{type: "application/json"});
-			var url = URL.createObjectURL(blob);
-			w = open(url);
-			if(context && context.load instanceof Function)
-				setTimeout(function() {context.load();}, 5000);
+			var str = data ? JSON.stringify(data) : "";
+			if(L.AKM.Util.clipboard(str)) {
+				alert("Simulate - Upload\r\ndata text has been copied to your clipboard");
+				if(context && context.load instanceof Function)
+					setTimeout(function() {context.load();}, 5000);
+			}
 		},
 		
 		geo_getCenter: function(latlngs) {
