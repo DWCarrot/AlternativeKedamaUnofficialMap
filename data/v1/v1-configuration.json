@@ -1,0 +1,39 @@
+{
+  "world": "v1",
+  "crs": {
+    "class": "L.AKM.CRS",
+    "args": [
+      {
+        "scale": 0.5,
+        "offset": [0, 0],
+        "maxZoom": 5
+      }
+    ]
+  },
+  "baselayer": {
+    "class": "L.TileLayer",
+    "args": [
+      "../data/v1/{z}/{x},{y}.png",
+      {
+        "tileSize": 1024,
+        "maxZoom": 5,
+        "attribution": "&copy; 2018 Kedama-Koiru Monogatari"
+      }
+    ]
+  },
+  "overlayers": {
+    "map-marker": {
+      "class": "L.AKM.MarkerControlLayer",
+      "autoshow": true,
+      "args": [
+        "../data/v1/v1-markers.json",
+        {
+          "searchUI": "$SEARCH_UI",
+          "editUI": "$EDIT_UI",
+          "pushOperation": "$PUSH_OP"
+        }
+      ]
+    }
+  }
+}
+

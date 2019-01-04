@@ -10,6 +10,5 @@ tools/src/*
 *.vs
 
 # too large file
-data/v2-*.png
-data/v3-*.png
+data/v*.png
 

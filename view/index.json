@@ -1,4 +1,5 @@
 [
+	"../data/v1/v1-configuration.json",
 	"../data/v2/v2-configuration.json",
 	"../data/v3-vanilla/v3-configuration.json",
 	"../data/v3/v3-configuration.json"

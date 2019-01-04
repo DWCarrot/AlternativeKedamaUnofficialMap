@@ -38,6 +38,23 @@ class SplitMap:
         
     
     def load(self, path, tileW=None, tileH=None):
+        if os.path.isfile(path):
+            pic = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+            w = pic.shape[1]
+            h = pic.shape[0]
+            ox = numpy.int32((self.w - w) / 2)
+            oy = numpy.int32((self.h - h) / 2)
+            if pic.shape[2] == 3:
+                alpha = numpy.zeros(pic.shape[0:2], pic.dtype)
+                index = numpy.logical_and(pic[:,:,0] == 0, numpy.logical_and(pic[:,:,1] == 0, pic[:,:,2] == 0))
+                alpha[index] = 0
+            else:
+                alpha = pic[:,:,3]
+                pic = pic[:,:,0:3]
+            self.map[oy : oy + h, ox : ox + w, 0:3] = pic
+            self.map[oy : oy + h, ox : ox + w, 3] = alpha
+            return self.map
+        
         if not tileW:
             tileW = self.tw
         else:
@@ -129,7 +146,11 @@ class SplitMap:
                 res.append(('0,0.png', part))                
         return res
     
-    def update(self, path, picList):
+    def update(self, path, picList, logfile):
+        if logfile:
+            logfile = open(logfile, 'w+')
+            logfile.write('\n\r')
+            logfile.write('====\n\r')
         if not os.path.exists(path):
             os.makedirs(path)
         for picItem in picList:
@@ -145,6 +166,10 @@ class SplitMap:
                 print('@skip: ', fname)
             else:
                 print('@save: ', fname, ' =', cv2.imwrite(fname, pic))
+                if logfile:
+                    logfile.write(fname + '\n\r')
+        if logfile:
+            logfile.close()
         
 def show(ls):
     for u in ls:
@@ -204,7 +229,7 @@ def main():
                 th = None
                 continue
             if cmd[0] == 'split':
-                m.update(cmd[1], m.split(int(cmd[2])))
+                m.update(cmd[1], m.split(int(cmd[2])), 'update.log')
                 continue
             if cmd[0] == 'splitAll':
                 for zoom in range(m.z, -1, -1):
