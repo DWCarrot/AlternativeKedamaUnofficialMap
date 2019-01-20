@@ -42,39 +42,40 @@
 	<script src="kedama-map.js"></script>
 	 -->
 	
-	<script type="text/javascript" src="Class.js"></script>
-	<script type="text/javascript" src="kedama-map.js"></script>
 	
-	<!--
-	<div id="template-popup-01" hidden="hidden">
-		<div style="font-weight:bold;">{title}</div>
-	</div>
-	<div id="template-popup-02" hidden="hidden">
-		<div style="font-size:smaller;">{x},{z}</div>
-	</div>
-	<div id="template-popup-03" hidden="hidden">
-		<hr/>
-		<div style="max-width: 150px; word-wrap:break-word; word-break:break-all;" >{description}</div>
-	</div>
-	<div id="template-pointer" hidden="hidden">
-		指向坐标: {x},{z}
-	</div>
-	<div id="template-basic-dialog" hidden="hidden">
-		<div class="leaflet-control-container leaflet-bar leaflet-top dialog">
-			<input class="close leaflet-right" type="button" value="X" />
-			<div class="close-occupation" style="outline: invert;">{title}</div>
-			<div>{inner}</div>
-		</div>
-	</div>
-	-->
+	<script type="text/x-template" id="modal-template">
+		<transition name="modal">
+			<div class="modal-mask">
+				<div class="modal-wrapper">
+					<div class="modal-container">
+
+						<div class="modal-header">
+							<slot name="header">
+								default header
+							</slot>
+						</div>
+
+						<div class="modal-body">
+							<slot name="body">
+								default body
+							</slot>
+						</div>
+
+						<div class="modal-footer">
+							<slot name="footer">
+								default footer
+								<button class="modal-default-button" @click="$emit('close')">
+									OK
+								</button>
+							</slot>
+						</div>
+					</div>
+				</div>
+			</div>
+		</transition>
+	</script>
 	
-	<template id="help-template">
-		<div>Help &amp; About</div>
-		<hr class="normal-hr" />
-		<div style="color: #cccccc;">emmm没写完<br/>请自行尝试(((</div>
-	</template>
-	
-	<template id="template-02">
+	<script type="text/x-template" id="template-02">
 		<div class="dialog-edit-container">
 			<div class="dialog-head">
 				<span>编辑标记</span>
@@ -119,9 +120,102 @@
 				</table>
 			</div>
 		</div>
-	</template>
+	</script>
+	
+	<script type="text/x-template" id="template-03">
+		<div class="dialog-edit-container">
+			<div class="dialog-head">
+				<span>编辑标记</span>
+			</div>
+			<hr class="normal-hr" />
+			<div class="dialog-edit-body">
+				<table class="dialog-edit-table">
+					<tr>
+						<td>title</td>
+						<td>
+							<input name="name" type="text" v-bind:value="marker.name" v-on:change="oc_marker_change" />
+						</td>
+					</tr>
+					<tr>
+						<td>x</td>
+						<td>
+							<input name="x" type="number" v-bind:value="marker.x" v-on:change="oc_marker_change" />
+						</td>
+					</tr>
+					<tr>
+						<td>z</td>
+						<td>
+							<input name="z" type="number" v-bind:value="marker.z" v-on:change="oc_marker_change" />
+						</td>
+					</tr>
+					<tr>
+						<td>category</td>
+						<td>
+							<select name="category" type="text" v-bind:value="marker.category" v-on:change="oc_marker_change" >
+								<option value=""></option>
+								<option v-for="cate in categories" v-bind:value="cate">{{ cate }}</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>icon</td>
+						<td>
+							<select name="icon" type="text" v-bind:value="marker.icon" v-on:change="oc_marker_change" >
+								<option value=""></option>
+								<option v-for="(icon, iconName) in icons" v-bind:value="iconName">{{ iconName }}</option>
+							</select>
+							<img class="dialog-edit-iconShow" v-bind:src="iconUrl" />
+						</td>
+					</tr>
+					<tr>
+						<td>description</td>
+						<td>
+							<textarea name="description" v-bind:value="marker.description" v-on:change="oc_marker_change" />
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</script>
+	
+	<div hidden="hidden">
+		<div id="control-marker-searchUI">
+			<modal v-if="showModal" @close="showModal = false;">
+				<h3 slot="header">custom header</h3>
+			</modal>
+		</div>
+		
+		<div id="control-marker-searchUI">
+			<modal v-if="showModal" @close="showModal = false;">
+				<h3 slot="header">custom header</h3>
+			</modal>
+		</div>
+		
+		<div id="help-template">
+			<modal v-if="showModal" @close="showModal = false;">
+				<div slot="body">
+					<div>Help &amp; About</div>
+					<hr class="normal-hr" />
+					<div style="color: #bbbbbb;">emmm没写完<br/>请自行尝试(((</div>
+				</div>
+			</modal>
+		</div>
+		
+		
+	</div>
 	
 	
+	
+
+	
+	
+	<script type="text/javascript" src="Class.js"></script>
+	<script type="text/javascript" src="kedama-map.js"></script>
+	
+	<div hidden="hidden">
+		
+	
+	</div>
 	
 </body>
 

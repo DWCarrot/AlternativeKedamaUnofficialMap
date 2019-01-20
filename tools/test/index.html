@@ -6,7 +6,11 @@
 	<body>
 		<div id="app"></div>
 		
+		<canvas id="pic">
 		
+		</canvas>
+		
+		<button id="btn">LOAD</button>
 		
 	</body>
 	<script>
@@ -33,12 +37,13 @@
 			return res;
 		}
 		var load = function(canvas) {
-			canvas.width = 640;
+			let n = 6;
+			canvas.width = 128 * n;
 			canvas.height = 128;
 			let ctx = canvas.getContext("2d");
-			let f = ["地图-地标","删除","编辑","搜索放大","云端上传"];
+			let f = ["地图-地标","删除","编辑","搜索放大","云端上传", "云端下载"];
 			let imgs = new Array();
-			for(let i = 0; i < 5; ++i) {
+			for(let i = 0; i < n; ++i) {
 				let img = new Image();
 				img.posx = i * 128 + (128-80)/2;
 				img.posy = (128-80)/2;
@@ -51,6 +56,9 @@
 					ctx.drawImage(img1, img1.posx, img1.posy, img1.posw, img1.posh);
 				};
 			}
+		}
+		document.querySelector("#btn").onclick = function() {
+			load(document.querySelector("#pic"));
 		}
 	</script>
 	<script type="module" src="./index.js"></script>

@@ -303,11 +303,26 @@
 		},
 		
 		simulateUpload: function(data, context) {
+			if(context.options.dataPro2 instanceof Function)
+				data = context.options.dataPro2(data);
 			var str = data ? JSON.stringify(data) : "";
 			if(L.AKM.Util.clipboard(str)) {
 				alert("Simulate - Upload\r\ndata text has been copied to your clipboard");
 				if(context && context.load instanceof Function)
 					setTimeout(function() {context.load();}, 5000);
+			}
+		},
+		
+		simulateLoad: function(data, context) {
+			var str = prompt("Marker JSON:");
+			try {
+				if(str == "")
+					return;
+				str = JSON.parse(str);
+				context._removeList();
+				context._addList(str);
+			} catch(e) {
+				console.warn(e);
 			}
 		},
 		

@@ -20,6 +20,7 @@
 				edit: "Edit selected marker",
 				search: "Search markers",
 				push: "Upload changes to server",
+				load: "Load markers",
 			},
 			
 			/**
@@ -42,10 +43,30 @@
 			searchUI: L.AKM.Util.basicMarkerSearchUI,
 			
 			/**
-			 * @option searchUI			<Function> (<Array<MarkerObj>>, <L.AKM.MarkerControl>this) => ()
+			 * @option pushOperation	<Function> (<Array<MarkerObj>>, <L.AKM.MarkerControl>this) => ()
 					perform UI to search markers
 			 */
 			pushOperation: L.AKM.Util.simulateUpload,
+			
+			/**
+			 * @option loadOperation	<Function> (<Array<MarkerObj>>, <L.AKM.MarkerControl>this) => ()
+					perform UI to search markers
+			 */
+			loadOperation: L.AKM.Util.simulateLoad,
+			
+			
+			/**
+			 * @option dataPro1			<Function> (<Array<MarkerObj>>, <L.AKM.MarkerControl>this) => ()
+					perform UI to search markers
+			 */
+			dataPro1: null,
+			
+			
+			/**
+			 * @option dataPro2			<Function> (<Array<MarkerObj>>, <L.AKM.MarkerControl>this) => ()
+					perform UI to search markers
+			 */
+			dataPro2: null,
 		},
 		
 		initialize: function(markerList, options) {
@@ -55,6 +76,8 @@
 				//this.reloadAsyn(this.options.url);
 				this._url = markerList;
 			} else {
+				if(this.options.dataPro1 instanceof Function)
+					markerList = this.options.dataPro1(markerList, this);
 				this._addList(markerList);
 			}
 		},
@@ -66,6 +89,8 @@
 				url,
 				function(markerList) {
 					this._removeList();
+					if(this.options.dataPro1 instanceof Function)
+						markerList = this.options.dataPro1(markerList, this);
 					this._addList(markerList);
 				},
 				this
@@ -266,6 +291,14 @@
 			push.style.height = String(w) + "px";
 			push.style.backgroundPositionX = String(-(w * 4)) + "px";
 			L.DomEvent.on(push, "click", this._onCtrlPush, this);
+			var load = L.DomUtil.create("a", "leaflet-control-markers-load", this._control);
+			load.name = "load";
+			load.href = "#";
+			load.title = tips.load;
+			load.style.width = String(w) + "px";
+			load.style.height = String(w) + "px";
+			load.style.backgroundPositionX = String(-(w * 5)) + "px";
+			L.DomEvent.on(load, "click", this._onCtrlLoad, this);
 		},
 		
 		_onRemoveControl: function(map) {
@@ -357,6 +390,14 @@
 			this._menuFuc = undefined;
 		},
 		
+		_onCtrlLoad: function(event) {
+			this._onCtrlClear();
+			this._menuFuc = event.target;
+			if(this.options.pushOperation instanceof Function)
+				this.options.loadOperation(this.getMarkers(["icon", "title"]), this);
+			this._menuFuc = undefined;
+		},
+		
 		_onCtrlClear: function() {
 			if(this._menuFuc === undefined)
 				return undefined;
@@ -381,6 +422,8 @@
 				case "search":
 					break;
 				case "push":
+					break;
+				case "load":
 					break;
 			}
 			return last;

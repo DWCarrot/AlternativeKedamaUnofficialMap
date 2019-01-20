@@ -40,12 +40,14 @@
 			}
 		}
 	
-		let searchDialog = function(map, data) {
+		let searchDialog = function(map, data, p) {
+			if(p === undefined)
+				p = "title";
 			let dom = document.createElement("div");
 			dom.id = "search_dialog";
 			dom.className = "search-dialog-body"
 			let c1 = document.createElement("div");
-			c1.innerHTML = "<center><strong>搜索标记{{ a }}</strong></center>"
+			c1.innerHTML = "<center><strong>搜索标记</strong></center>"
 			dom.appendChild(c1);
 			c1 = document.createElement("div");
 			dom.appendChild(c1);
@@ -65,7 +67,7 @@
 				let res = new Array();
 				let key = e.target.value;
 				data.forEach(function(obj) {
-					if(obj.title.indexOf(key) >= 0)
+					if(obj[p].indexOf(key) >= 0)
 						res.push(obj);
 				});
 				for (let i = 0; i < res.length; i++) {
@@ -74,7 +76,7 @@
 					let d = [];
 					for(let n = 0; n < 4; ++n)
 						t.appendChild(d[n] = document.createElement("td"));
-					d[0].innerText = t.marker.title;
+					d[0].innerText = t.marker[p];
 					d[1].innerText = t.marker.x + ',' + t.marker.z;
 					d[2].innerText = '跳转'
 					d[2].className = 'td-btn'
@@ -86,7 +88,7 @@
 					d[3].className = 'td-btn'
 					d[3].addEventListener("click", function(e) {
 						let marker = e.target.parentNode.marker;
-						let s = JSON.stringify(marker, ["x", "z", "title"]);
+						let s = JSON.stringify(marker, ["x", "z", p]);
 						if(L.AKM.Util.clipboard(s)) {
 							e.target.style.backgroundColor = "#AFD";
 							setTimeout(function(){e.target.style.backgroundColor = "";},1000);
@@ -101,6 +103,7 @@
 		}
 
 		let icons = {};
+		let iconJSON = {};
 		L.AKM.Util.getJSON(
 			"../data/icons/icon-configuration.json",
 			function(data) {
@@ -162,6 +165,19 @@
 		
 		Class.registerVar(
 			"L.AKM.MarkerControlLayer",
+			"$SEARCH_UI_YAKM",
+			function(markerList, ctrl) {
+				try {
+					let map = ctrl._map;
+					dialog.setContent(searchDialog(map, markerList, "name")).addTo(map);
+				} catch(e) {
+					console.warn(e);
+				}
+			}
+		);
+		
+		Class.registerVar(
+			"L.AKM.MarkerControlLayer",
 			"$PUSH_OP",
 			L.AKM.Util.simulateUpload
 		);
@@ -200,8 +216,9 @@
 					});
 					let closeCallback = function(event) {
 						map.off("dialog:closed", closeCallback);
-						if(changed)
+						if(changed) {
 							ctrl.updateMarker(marker);
+						}
 						vm.$destroy();
 					}
 					map.on("dialog:closed", closeCallback);
@@ -211,7 +228,125 @@
 			}
 		);
 		
+		Class.registerVar(
+			"L.AKM.MarkerControlLayer",
+			"$DATA_PRO_1_YAKM",
+			function(data, ctrl) {
+				iconJSON = data.icons;
+				for(let p in iconJSON) {
+					L.AKM.Util.getJSON(
+						iconJSON[p],
+						function(data) {
+							let ico = icons[p] = new L.Icon(data);
+							for(let ind in ctrl._markers) {
+								let pair = ctrl._markers[ind];
+								if(pair.obj.icon == p)
+									pair.layer.setIcon(ico);
+							}
+						},
+						p
+					)
+				}
+				let markers = data.markers;
+				let array = new Array();
+				ctrl["_$category"] = Object.keys(markers);
+				for(let p in markers) {
+					markers[p].forEach(function(item){
+						item.category = p;
+						this.push(item);
+					}, array);
+				}
+				return array;
+			}
+		);
 		
+		Class.registerVar(
+			"L.AKM.MarkerControlLayer",
+			"$DATA_PRO_2_YAKM",
+			function(data) {
+				let markers = {};
+				data.forEach(function(item) {
+					let p = item.category;
+					delete item.category;
+					if(!(p in markers))
+						markers[p] = new Array();
+					markers[p].push(item);
+				}, markers);
+				return {
+					markers: markers,
+					icons: iconsJSON
+				};
+			}
+		);
+		
+		Class.registerVar(
+			"L.AKM.MarkerControlLayer",
+			"$MARKER_YAKM",
+			function(markerObj) {
+				var marker = new L.Marker([markerObj.z, markerObj.x]);
+				if(markerObj.icon in icons)
+					marker.setIcon(icons[markerObj.icon]);
+				var title = String.prototype.concat.call('<span style="font-weight:bold;">', markerObj.name, '</span>');
+				var coord = String.prototype.concat.call('<span style="font-size:smaller;">', markerObj.x, ',', markerObj.z, '</span>');
+				var descr = '';
+				if(markerObj.description)
+					descr = String.prototype.concat.call('<span style="max-width: 200px; word-wrap:break-word; word-break:break-all;" >', markerObj.description.replace('\n', '<br/>'), '</span>');
+				var category = '';
+				if(markerObj.category)
+					category = String.prototype.concat.call('<span style="font-style:italic; font-size:smaller; color:aqua;">', markerObj.category, '</span>');
+				marker.bindPopup(String.prototype.concat.call('<div>',title, category, '</div>', coord, '<hr/>' , descr));
+				return marker;
+			},
+		);
+		
+		Class.registerVar(
+			"L.AKM.MarkerControlLayer",
+			"$EDIT_UI_YAKM",
+			function(marker, markerObj, ctrl) {
+				try {
+					let map = ctrl._map;
+					let dom = document.createElement("div");
+					let changed = false;
+					dom.innerHTML = document.getElementById("template-03").innerHTML;
+					dom.id = "edit_dialog";
+					dialog.setContent(dom).addTo(map);
+					let vm = new Vue({
+						el: "#" + dom.id,
+						data: {
+							marker: markerObj,
+							iconUrl: new String(markerObj.icon in icons ? icons[markerObj.icon].options.iconUrl : ""),
+							categories: ctrl["_$category"].slice(0),
+						},
+						computed: {
+							icons: function() {return icons;},
+						},
+						methods: {
+							oc_marker_change: function(event) {
+								let t = event.target;
+								this.marker[t.name] = t.value;
+								changed = true;
+								this.iconUrl = this.marker.icon in this.icons ? this.icons[this.marker.icon].options.iconUrl : "";
+							},
+						},
+						destroyed: function() {
+							dom.remove();
+						},
+					});
+					let closeCallback = function(event) {
+						map.off("dialog:closed", closeCallback);
+						if(changed) {
+							ctrl.updateMarker(marker);
+							this.marker["timestamp"] = new Date().toISOString();
+							this.marker["uploader"] = -1;
+						}
+						vm.$destroy();
+					}
+					map.on("dialog:closed", closeCallback);
+				} catch(e) {
+					console.warn(e);
+				}
+			}
+		);
 		
 		let dynamicAdd = function(url, controller) {
 			L.AKM.Util.getJSON(
@@ -259,6 +394,73 @@
 			);
 		}, document.querySelector("#debug"));
 		
+		
+		let scaleControl = new L.AKM.ScaleControl().addTo(map);
+		
+		//leaflet-draw: temporarily add for overworld-railway project {
+		
+		let drawnItems = new L.GeoJSON().addTo(map);
+		
+		let drawControl = new L.Control.Draw({
+			edit: {
+				featureGroup: drawnItems,
+				poly: {
+					allowIntersection: false
+				},
+				
+			},
+			draw: {
+				polygon: {
+					allowIntersection: false,
+					showArea: true
+				},
+			}
+		}).addTo(map);
+		
+		
+		map.on(L.Draw.Event.CREATED, function (event) {
+			let layer = event.layer;
+
+			drawnItems.addLayer(layer);
+		});
+		
+		let loadGeo = new L.Control.EasyButton(
+			'<img src="load-is.svg" class="help-and-about-icon"></img>',
+			function() {
+				let s = prompt('请粘贴GeoJSON');
+				try {
+					s = JSON.parse(s);
+					drawnItems.addData(s);
+				} catch(e) {
+					if(s)
+						console.warn(e);
+				}
+			},
+			'由GeoJSON加载绘图',
+			null,
+			{
+				position: 'topleft',
+				tagName: 'a',
+			}
+		);
+		
+		let saveGeo = new L.Control.EasyButton(
+			'<img src="save-is.svg" class="help-and-about-icon"></img>',
+			function() {
+				let s = drawnItems.toGeoJSON();
+				L.AKM.Util.simulateUpload(s);
+			},
+			'保存绘图为GeoJSON',
+			null,
+			{
+				position: 'topleft',
+				tagName: 'a',
+			}
+		);
+		
+		let ebbar = L.easyBar([ loadGeo, saveGeo]).addTo(map);
+		
+		
 		let ctrl = new L.AKM.BindedLayerControl().addTo(map);
 		
 		let help = new L.Control.EasyButton(
@@ -276,9 +478,9 @@
 				}
 		).addTo(map);
 		
-		
+		let query = new L.AKM.Util.URL(location.href).getQuery();
 		L.AKM.Util.getJSON(
-			"index.json", 
+			("sp" in query) ? query.sp : 'index.json', 
 			function(data) {
 				data.forEach(function(url) {dynamicAdd(url, ctrl);});
 			},
@@ -287,7 +489,6 @@
 			undefined,
 			true
 		);
-		
 		
 		
 		//common layer: MenuControl
@@ -371,76 +572,27 @@
 			}
 		]).addTo(map);
 		*/
-		let scaleControl = new L.AKM.ScaleControl().addTo(map);
 		
-		//leaflet-draw: temporarily add for overworld-railway project {
-		
-		let drawnItems = new L.GeoJSON().addTo(map);
-		
-		let drawControl = new L.Control.Draw({
-			edit: {
-				featureGroup: drawnItems,
-				poly: {
-					allowIntersection: false
-				},
-				
-			},
-			draw: {
-				polygon: {
-					allowIntersection: false,
-					showArea: true
-				},
-			}
-		}).addTo(map);
-		
-		
-		map.on(L.Draw.Event.CREATED, function (event) {
-			let layer = event.layer;
-
-			drawnItems.addLayer(layer);
-		});
-		
-		let loadGeo = new L.Control.EasyButton(
-			'<img src="load-is.svg" class="help-and-about-icon"></img>',
-			function() {
-				let s = prompt('请粘贴GeoJSON');
-				try {
-					s = JSON.parse(s);
-					drawnItems.addData(s);
-				} catch(e) {
-					if(s)
-						console.warn(e);
-				}
-			},
-			'由GeoJSON加载绘图',
-			null,
-			{
-				position: 'topleft',
-				tagName: 'a',
-			}
-		);
-		
-		let saveGeo = new L.Control.EasyButton(
-			'<img src="save-is.svg" class="help-and-about-icon"></img>',
-			function() {
-				let s = drawnItems.toGeoJSON();
-				L.AKM.Util.simulateUpload(s);
-			},
-			'保存绘图为GeoJSON',
-			null,
-			{
-				position: 'topleft',
-				tagName: 'a',
-			}
-		);
-		
-		let ebbar = L.easyBar([ loadGeo, saveGeo]).addTo(map);
 		
 		//}
 		
+		/*
+		//modal test
+		
+		Vue.component('modal', {
+			template: '#modal-template'
+		});
+		
+		let vm = new Vue({
+			el: '#modal-test-01',
+			data: {
+				showModal: false
+			}
+		})*/
+		let vm = null;
 		
 		if(!L.Browser.ie) {
-			eval('console.log("hook => ", {map, ctrl, dialog, drawnItems})');
+			eval('console.log("hook => ", {map, ctrl, dialog, drawnItems, vm})');
 		}
 	});
 })();

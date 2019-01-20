@@ -1,5 +1,5 @@
 {
-  "world": "v3",
+  "world": "act706",
   "default": true,
   "crs": {
     "class": "L.AKM.CRS",
@@ -14,7 +14,7 @@
   "baselayer": {
     "class": "L.TileLayer",
     "args": [
-      "https://kedama-map-tiles.jsw3286.eu.org/v3/z{z}/voxelmap/{x},{y}.png",
+      "https://kedama-map-tiles.jsw3286.eu.org/act706/z{z}/voxelmap/{x},{y}.png",
       {
         "tileSize": 512,
         "minZoom": 1,
@@ -28,20 +28,15 @@
       "class": "L.AKM.MarkerControlLayer",
       "autoshow": true,
       "args": [
-        "../data/v3/v3-markers.json",
+        "https://kedama-map-markers.jsw3286.eu.org/getMarkers?map=act706",
         {
-          "searchUI": "$SEARCH_UI",
-          "editUI": "$EDIT_UI",
-          "pushOperation": "$PUSH_OP"
+          "markerFactory": "$MARKER_YAKM",
+          "searchUI": "$SEARCH_UI_YAKM",
+          "editUI": "$EDIT_UI_YAKM",
+          "pushOperation": "$PUSH_OP",
+          "dataPro1": "$DATA_PRO_1_YAKM",
+          "dataPro2": "$DATA_PRO_2_YAKM"
         }
-      ]
-    },
-    "chunk-mark": {
-      "class": "L.KC.ShowVertex",
-      "autoshow": false,
-      "args": [
-        "../tools/data.json",
-        {}
       ]
     }
   }
