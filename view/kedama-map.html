@@ -131,7 +131,7 @@
 			<div class="dialog-edit-body">
 				<table class="dialog-edit-table">
 					<tr>
-						<td>title</td>
+						<td>name</td>
 						<td>
 							<input name="name" type="text" v-bind:value="marker.name" v-on:change="oc_marker_change" />
 						</td>
@@ -152,7 +152,7 @@
 						<td>category</td>
 						<td>
 							<select name="category" type="text" v-bind:value="marker.category" v-on:change="oc_marker_change" >
-								<option value=""></option>
+								<option value="未分类"></option>
 								<option v-for="cate in categories" v-bind:value="cate">{{ cate }}</option>
 							</select>
 						</td>

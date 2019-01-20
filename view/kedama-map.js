@@ -6,6 +6,7 @@
 //	Class.loadScript("https://unpkg.com/leaflet@1.3.4/dist/leaflet-src.js", "sha512-+ZaXMZ7sjFMiCigvm8WjllFy6g3aou3+GZngAtugLzrmPFKFK7yjSri0XnElvCTu/PrifAYQuxZTybAEkA8VOA==", 1);
 	Class.loadStyle("https://unpkg.com/leaflet@1.3.4/dist/leaflet.css", "sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==");
 	Class.loadScript("https://cdn.jsdelivr.net/npm/vue", undefined, 1);
+	Class.loadScript("plugin/JSONBlob.js", undefined, 1);
 	Class.loadScript("https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js", undefined, 2);
 	Class.loadStyle("https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css", undefined);
 	Class.loadScript("plugin/Leaflet.AKM.Util.js", undefined, 2);
@@ -26,19 +27,9 @@
 	Class.loadScript("leaflet-kedama_craft_map-plugins.js", undefined, 3);
 	Class.startTask(function() {
 	
-		L.AKM.Util.simulateUpload = function(data, context) {
-			var str = data ? JSON.stringify(data) : "";
-			if(L.AKM.Util.clipboard(str)) {
-				alert(String.prototype.concat.call(
-					"emmmm并没有服务器能接受上传数据\n\r",
-					"emmmm因为并没有服务器QAQ\n\r",
-					"数据已经以文本格式复制到剪切板上了，可以在别的地方右键粘贴\n\r",
-					"比如找RDCarrot/jsw/SilentDepth等等 或者粘到论坛上（"
-				))
-				if(context && context.load instanceof Function)
-					setTimeout(function() {context.load();}, 5000);
-			}
-		}
+		let icons = {};
+		let iconJSON = {};
+		let query = new L.AKM.Util.URL(location.href).getQuery();
 	
 		let searchDialog = function(map, data, p) {
 			if(p === undefined)
@@ -97,13 +88,113 @@
 					c5.appendChild(t);
 				}
 			});
-			let c3 = document.createElement("hr")
+			let c3 = document.createElement("hr");
 			dom.appendChild(c3);
 			return dom;
 		}
-
-		let icons = {};
-		let iconJSON = {};
+		
+		
+		let updateMarkerList_YAKM = function(remote, local, curr, cmp) {
+			let r = remote.splice(0);
+			r.sort(cmp);
+			local.sort(cmp);
+			curr.sort(cmp);
+			let i = 0, j = 0, k = 0, c = undefined, d = undefined;
+			while(i < r.length && j < local.length && k < curr.length) {
+				c = cmp(r[i], local[j]);
+				if(c == 0) {
+					d = cmp(local[j], curr[k]);
+					if(d == 0) {
+						remote.push(curr[k]);	//keep
+						i++; j++; k++;
+					} else {
+						if(d > 0) {
+							remote.push(curr[k]);	//add
+							k++;
+						} else {
+							i++; j++	//remove
+						}
+					}
+				} else {
+					if(c > 0) {
+						d = cmp(local[j], curr[k]);
+						if(d == 0) {
+							j++; k++;
+						} else {
+							if(d > 0) {
+								k++;
+							} else {
+								j++;
+							}
+						}
+					} else {
+						remote.push(r[i]);
+						i++;
+					}
+				}
+			}
+			while(i < r.length && j < local.length) {
+				c = cmp(r[i], local[j]);
+				if(c == 0) {
+					i++; j++;
+				} else {
+					if(c > 0) {
+						j++;
+					} else {
+						i++;
+					}
+				}
+			}
+			while(i < r.length)
+				remote.push(r[i++]);
+			while(k < curr.length)
+				remote.push(curr[k++]);
+			return remote;
+		}
+		
+		
+		L.AKM.Util.simulateUpload = function(data, context) {
+			var str = data ? JSON.stringify(data) : "";
+			if(L.AKM.Util.clipboard(str)) {
+				alert(String.prototype.concat.call(
+					"emmmm并没有服务器能接受上传数据\n\r",
+					"emmmm因为并没有服务器QAQ\n\r",
+					"数据已经以文本格式复制到剪切板上了，可以在别的地方右键粘贴\n\r",
+					"比如找RDCarrot/jsw/SilentDepth等等 或者粘到论坛上（"
+				))
+				if(context && context.load instanceof Function)
+					setTimeout(function() {context.load();}, 5000);
+			}
+		}
+		
+		L.AKM.MarkerControlLayer = L.Layer.extend({
+		
+			initialize: function (markerList, options) {
+				this.real = new L.AKM.MarkerControl(markerList, options);
+			},
+			
+			onAdd: function(map) {
+				map.addControl(this.real);
+				if(!this.added && query.tr) {
+					this.added = true;
+					let that = this.real;
+					setTimeout(function() {
+						if(that.options.loadOperation instanceof Function) {
+							var data = that.getMarkers();
+							if(that.options.dataPro2 instanceof Function)
+								data = that.options.dataPro2(data);
+							that.options.loadOperation(that.getMarkers(), that);
+						}
+					}, 2000);
+				}
+			},
+			
+			onRemove: function(map) {
+				map.removeControl(this.real);
+			}
+		});
+		
+		
 		L.AKM.Util.getJSON(
 			"../data/icons/icon-configuration.json",
 			function(data) {
@@ -176,10 +267,78 @@
 			}
 		);
 		
+		
 		Class.registerVar(
 			"L.AKM.MarkerControlLayer",
-			"$PUSH_OP",
-			L.AKM.Util.simulateUpload
+			"$LOAD_OP_YAKM",
+			function(data, ctrl) {
+				let id = query.tr;
+				if(id === undefined) {
+					id = prompt("JSONBlob id:");
+				}
+				if(id === "")
+					return;
+				JSONBlob.getJSON(id, {
+					success: function(respObj, resp) {
+						data = respObj[ctrl.options["akm-id"]];
+						if(data !== undefined) {
+							sessionStorage.setItem(L.Util.stamp(ctrl), JSON.stringify(data));
+							ctrl._removeList();
+							ctrl._addList(data);
+						}
+					}
+				});
+			}
+		);
+		
+		
+		Class.registerVar(
+			"L.AKM.MarkerControlLayer",
+			"$PUSH_OP_YAKM",
+			function(data, ctrl) {
+				let id = query.tr;
+				if(id === undefined) {
+					id = prompt("JSONBlob id:");
+				}
+				if(id === "")
+					return;
+				JSONBlob.getJSON(id, {
+					success: function(respObj) {
+						let old = respObj[ctrl.options["akm-id"]];
+						let priv = JSON.parse(sessionStorage.getItem(L.Util.stamp(ctrl)));
+						let cmp = function(a, b) {
+							let ta = new Date(a.timestamp).getTime();
+							let tb = new Date(b.timestamp).getTime();
+							if(ta == tb)
+								return a.name.localeCompare(b.name);
+							else
+								return(ta - tb);
+						}
+						if(old === undefined && priv === undefined) {
+							respObj[ctrl.options["akm-id"]] = data;
+						} else {
+							if(old === undefined || priv === undefined)
+								return;
+							old = old.markers;
+							priv = priv.markers;
+							data = data.markers;
+							for(let cate in data) {
+								if(!(cate in priv))
+									priv[cate] = new Array();
+								if(!(cate in old))
+									old[cate] = new Array();
+								updateMarkerList_YAKM(old[cate], priv[cate], data[cate], cmp);
+							}
+						}
+						JSONBlob.putJSON(id, respObj, {
+							success: function(respObj, resp) {
+								sessionStorage.setItem(L.Util.stamp(ctrl), JSON.stringify(respObj[ctrl.options["akm-id"]]));
+								alert("upload complete @https://jsonblob.com/" + id);
+							}
+						});
+					}
+				});
+			}
 		);
 		
 		Class.registerVar(
@@ -234,13 +393,15 @@
 			function(data, ctrl) {
 				iconJSON = data.icons;
 				for(let p in iconJSON) {
+					if(p in icons)
+						continue;
 					L.AKM.Util.getJSON(
 						iconJSON[p],
 						function(data) {
-							let ico = icons[p] = new L.Icon(data);
+							let ico = icons[this] = new L.Icon(data);
 							for(let ind in ctrl._markers) {
 								let pair = ctrl._markers[ind];
-								if(pair.obj.icon == p)
+								if(pair.obj.icon == this)
 									pair.layer.setIcon(ico);
 							}
 						},
@@ -274,7 +435,7 @@
 				}, markers);
 				return {
 					markers: markers,
-					icons: iconsJSON
+					icons: iconJSON
 				};
 			}
 		);
@@ -290,13 +451,13 @@
 				var coord = String.prototype.concat.call('<span style="font-size:smaller;">', markerObj.x, ',', markerObj.z, '</span>');
 				var descr = '';
 				if(markerObj.description)
-					descr = String.prototype.concat.call('<span style="max-width: 200px; word-wrap:break-word; word-break:break-all;" >', markerObj.description.replace('\n', '<br/>'), '</span>');
+					descr = String.prototype.concat.call('<span style="max-width: 200px; word-wrap:break-word; word-break:break-all;" >', markerObj.description.replace(/\n/g, '<br/>'), '</span>');
 				var category = '';
 				if(markerObj.category)
 					category = String.prototype.concat.call('<span style="font-style:italic; font-size:smaller; color:aqua;">', markerObj.category, '</span>');
 				marker.bindPopup(String.prototype.concat.call('<div>',title, category, '</div>', coord, '<hr/>' , descr));
 				return marker;
-			},
+			}
 		);
 		
 		Class.registerVar(
@@ -325,7 +486,8 @@
 								let t = event.target;
 								this.marker[t.name] = t.value;
 								changed = true;
-								this.iconUrl = this.marker.icon in this.icons ? this.icons[this.marker.icon].options.iconUrl : "";
+								if(t.name == "icon")
+									this.iconUrl = this.marker.icon in this.icons ? this.icons[this.marker.icon].options.iconUrl : "";
 							},
 						},
 						destroyed: function() {
@@ -335,9 +497,9 @@
 					let closeCallback = function(event) {
 						map.off("dialog:closed", closeCallback);
 						if(changed) {
+							markerObj["timestamp"] = new Date().toISOString();
+							markerObj["uploader"] = -1;
 							ctrl.updateMarker(marker);
-							this.marker["timestamp"] = new Date().toISOString();
-							this.marker["uploader"] = -1;
 						}
 						vm.$destroy();
 					}
@@ -478,7 +640,7 @@
 				}
 		).addTo(map);
 		
-		let query = new L.AKM.Util.URL(location.href).getQuery();
+		
 		L.AKM.Util.getJSON(
 			("sp" in query) ? query.sp : 'index.json', 
 			function(data) {

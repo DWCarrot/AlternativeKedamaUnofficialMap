@@ -76,8 +76,6 @@
 				//this.reloadAsyn(this.options.url);
 				this._url = markerList;
 			} else {
-				if(this.options.dataPro1 instanceof Function)
-					markerList = this.options.dataPro1(markerList, this);
 				this._addList(markerList);
 			}
 		},
@@ -89,8 +87,6 @@
 				url,
 				function(markerList) {
 					this._removeList();
-					if(this.options.dataPro1 instanceof Function)
-						markerList = this.options.dataPro1(markerList, this);
 					this._addList(markerList);
 				},
 				this
@@ -124,7 +120,7 @@
 			if(markerObj instanceof L.Marker) {
 				layer = markerObj;
 				var latlng = layer.getLatLng();
-				markerObj = {x: latlng.lng, z:latlng.lat, title: ""};
+				markerObj = {x: latlng.lng, z:latlng.lat};
 			} else {
 				layer = this.options.markerFactory(markerObj);
 			}
@@ -206,8 +202,11 @@
 			return list;
 		},
 		
+		
 		_addList: function(markerList) {
 			//add & try to show
+			if(this.options.dataPro1 instanceof Function)
+				markerList = this.options.dataPro1(markerList, this);
 			markerList.forEach(function(markerObj) {
 				var layer = this.options.markerFactory(markerObj);
 				var id = L.Util.stamp(layer);
@@ -383,18 +382,26 @@
 		_onCtrlPush: function(event) {
 			this._onCtrlClear();
 			this._menuFuc = event.target;
-			if(this.options.pushOperation instanceof Function)
-				this.options.pushOperation(this.getMarkers(["icon", "title"]), this);
-			else
+			if(this.options.pushOperation instanceof Function) {
+				var data = this.getMarkers();
+				if(this.options.dataPro2 instanceof Function)
+					data = this.options.dataPro2(data);
+				this.options.pushOperation(data, this);
+			} else {
 				console.info('upload: ', this.getMarkers());
+			}
 			this._menuFuc = undefined;
 		},
 		
 		_onCtrlLoad: function(event) {
 			this._onCtrlClear();
 			this._menuFuc = event.target;
-			if(this.options.pushOperation instanceof Function)
-				this.options.loadOperation(this.getMarkers(["icon", "title"]), this);
+			if(this.options.loadOperation instanceof Function) {
+				var data = this.getMarkers();
+				if(this.options.dataPro2 instanceof Function)
+					data = this.options.dataPro2(data);
+				this.options.loadOperation(this.getMarkers(), this);
+			}
 			this._menuFuc = undefined;
 		},
 		

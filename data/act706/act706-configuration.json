@@ -30,10 +30,12 @@
       "args": [
         "https://kedama-map-markers.jsw3286.eu.org/getMarkers?map=act706",
         {
+          "akm-id": "marker_control_act706_001",
           "markerFactory": "$MARKER_YAKM",
           "searchUI": "$SEARCH_UI_YAKM",
           "editUI": "$EDIT_UI_YAKM",
-          "pushOperation": "$PUSH_OP",
+          "pushOperation": "$PUSH_OP_YAKM",
+          "loadOperation": "$LOAD_OP_YAKM",
           "dataPro1": "$DATA_PRO_1_YAKM",
           "dataPro2": "$DATA_PRO_2_YAKM"
         }

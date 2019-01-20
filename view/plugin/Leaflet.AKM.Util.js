@@ -303,8 +303,6 @@
 		},
 		
 		simulateUpload: function(data, context) {
-			if(context.options.dataPro2 instanceof Function)
-				data = context.options.dataPro2(data);
 			var str = data ? JSON.stringify(data) : "";
 			if(L.AKM.Util.clipboard(str)) {
 				alert("Simulate - Upload\r\ndata text has been copied to your clipboard");
