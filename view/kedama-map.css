@@ -122,7 +122,13 @@ html {
 	padding-left: 0px;
 	padding-right: 0px;
 }
-
+//
+.leaflet-tile {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: optimizeSpeed;
+    -ms-interpolation-mode: nearest-neighbor
+}
 
 /*
  * vue modal
