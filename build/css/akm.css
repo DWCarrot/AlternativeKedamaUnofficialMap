@@ -1,0 +1,22 @@
+/* added by foraphe & BlingWang */
+body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+}
+
+html {
+	height: 100%;
+	width: 100vw;
+}
+
+/**/
+
+#map {
+    height: 100%;
+    width: 100vw;
+    background: #333333;
+    cursor: default;
+}
+
