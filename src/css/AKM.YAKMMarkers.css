@@ -1,0 +1,13 @@
+.yakm-marker-title {
+    font-weight: bolder;
+    font-size: medium;
+}
+
+.yakm-marker-category {
+    font-weight: lighter;
+    font-size: x-small;
+    font-style: italic;
+    color: #f4f4f4;
+    background-color: #808080;
+    margin-left: 20px;
+}

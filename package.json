@@ -1,0 +1,34 @@
+{
+  "name": "akm",
+  "version": "1.0.0",
+  "description": "Alternative KedamaCraft Unofficial Map",
+  "main": "view/akm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "start lite-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DWCarrot/AlternativeKedamaUnofficialMap.git"
+  },
+  "keywords": [
+    "leaflet",
+    "minecraft"
+  ],
+  "author": "DWCarrot",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DWCarrot/AlternativeKedamaUnofficialMap/issues"
+  },
+  "homepage": "https://github.com/DWCarrot/AlternativeKedamaUnofficialMap#readme",
+  "dependencies": {
+    "@types/leaflet": "^1.4.0",
+    "@types/marked": "^0.6.1",
+    "@types/requirejs": "^2.1.31",
+    "vue": "^2.6.8"
+  },
+  "devDependencies": {
+    "lite-server": "^2.4.0",
+    "typescript": "^3.3.3333"
+  }
+}

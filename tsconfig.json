@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "noEmitOnError": true,
+    "sourceMap": true,
+    "target": "es5",
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictBindCallApply": true,
+    "strictNullChecks": false,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": false,
+    "module": "amd",
+    "rootDir": "./src",
+    "outDir": "./build",
+    "lib": [
+      "dom",
+      "es2015",
+    ]
+  },
+  "includes": [
+    "src/*.ts"
+  ],
+  "compileOnSave": true
+}

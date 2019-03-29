@@ -1,0 +1,41 @@
+a.leaflet-control-markers-panel {
+    width: 26px;
+    height: 26px;
+    background-repeat: no-repeat;
+	background-origin: border-box;
+	background-clip: border-box;
+	background-size: 75%, auto;
+}
+
+a.leaflet-control-markers-panel-on {
+    background-color: #eeeeee;
+}
+
+a.leaflet-control-markers-add {
+    background-image: url("location.svg");
+}
+
+a.leaflet-control-markers-edit {
+    background-image: url("edit.svg");
+}
+
+a.leaflet-control-markers-remove {
+    background-image: url("delete.svg");
+}
+
+a.leaflet-control-markers-save {
+    background-image: url("save.svg");
+}
+
+a.leaflet-control-markers-load {
+    background-image: url("import.svg");
+}
+
+a.leaflet-control-markers-revoke {
+    background-image: url("undo.svg");
+}
+
+a.leaflet-control-markers-search {
+    background-image: url("search.svg");
+}
+

@@ -1,0 +1,71 @@
+.leaflet-control-measure {
+	background: white;
+	border-radius: 4px;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+	cursor: pointer;
+	padding: 2px 5px;
+}
+
+.leaflet-control-measure > * {
+	display: inline;
+}
+
+.leaflet-control-measure-pointer {
+	width: 16px;
+	height: 16px;
+	font-size: 12px;
+	padding-left: 3px;
+	margin-right: 3px;
+	border-left: 1px solid #ccc;
+}
+
+.leaflet-control-measure-pointer > span {
+	margin-right: 5px;
+}
+
+.leaflet-control-measure-control,
+.leaflet-control-measure-control:hover {
+	width: 16px;
+	height: 16px;
+	text-align: center;
+	text-decoration: none;
+	font-size: 12px;
+	vertical-align: middle;
+	margin-right: 3px;
+}
+
+.leaflet-control-measure-control {
+	background-color: #ffffff;
+}
+
+.leaflet-control-measure-control:hover {
+	background-color: #f4f4f4;
+}
+
+.leaflet-control-measure-control-down,
+.leaflet-control-measure-control-down:hover {
+	background-color: #f4f4f4;
+}
+
+.leaflet-control-measure-measure {
+	border-left: 1px solid #ccc;
+	width: 16px;
+	height: 16px;
+	text-align: center;
+	text-decoration: none;
+	font-size: 12px;
+	vertical-align: middle;
+	margin-right: 3px;
+	padding-left: 3px;
+}
+
+.leaflet-control-measure-measure > span {
+	margin-right: 5px;
+}
+
+.leaflet-control-measure-clean {
+	text-align: center;
+	font-weight: bold;
+	text-decoration: none;
+	font-size: 12px;
+}
