@@ -43,7 +43,7 @@
 
     /////////////////////////////////////////////////////////////////////////
 
-
+    console.debug = () => {};
 
     interface RequireConfigPath {
         url: string,
@@ -189,6 +189,12 @@
                 url: "https://unpkg.com/leaflet@1.4.0/dist/leaflet-src",
                 integrity: "sha512-GBlVVqOnLycKN+z49gDABUY6RxEQjOw/GHFbpboxpTxAPJQ78C6pAjT08S/1fT9pWOy9PeyDqipC7cBwrfX2cA=="
             },
+            "jquery": {
+                url: "https://code.jquery.com/jquery-3.3.1.min",
+                integrity: "sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            },
+            "jqueryui": "https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui",
+            "view/lib/easy-button": "https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button",
             "css!leaflet": {
                 url: "https://unpkg.com/leaflet@1.4.0/dist/leaflet",
                 integrity: "sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
@@ -197,15 +203,23 @@
             "css!view/AKM/MeasureControl": "css/AKM.MeasureControl",
             "css!view/AKM/MarkersControl": "css/AKM.MarkersControl",
             "css!view/AKM/YAKMMarkers": "css/AKM.YAKMMarkers",
+            "css!view/AKM/DialogUI": "css/AKM.DialogUI",
             "css!#1": {
                 url: "https://use.fontawesome.com/releases/v5.7.2/css/all",
                 integrity: "sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
-            }
+            },
+            "css!jqueryui": "https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui",
+            "css!view/lib/easy-button": "https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button"
         },
         waitSeconds: 10
     }, "view/akm");
 
-})(`+    Typescript \u00BB Alternative-KedamaCraft-(Unofficial)-Map    \u00A9 DWCarrot@https://dwcarrot.github.io`);
+})(`
+====================================================================
+    Typescript \u00BB Alternative-KedamaCraft-(Unofficial)-Map
+    \u00A9 2018-2019 KedamaMC Player Statistics & Visualization
+====================================================================
+`);
 
 
 

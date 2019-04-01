@@ -1,0 +1,15 @@
+
+
+a.leaflet-akm-aboutdialog-button {
+    width: 26px;
+    height: 26px;
+    background-repeat: no-repeat;
+	background-origin: border-box;
+	background-clip: border-box;
+	background-size: 75%, auto;
+    background-image: url("question-circle.svg");
+}
+
+.leaflet-akm-dialog {
+    z-index: 1000;
+}

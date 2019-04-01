@@ -1,12 +1,12 @@
 import * as L from "leaflet"
 import { setBase } from "./AKM/Util"
 import { MarkerData, MarkersControl } from "./AKM/MarkersControl"
-import { BoundedTileLayer } from "./AKM/BoundedTileLayer"
+import { YAKMTileLayer } from "./AKM/YAKMTileLayer"
 import { bindLayer, MapLayerConfig } from "./config"
 import { MeasureControl } from "./AKM/MeasureControl"
 import { YAKMMarkersManager } from "./AKM/YAKMMarkers"
 import { BasicMarkersManager } from "./AKM/BasicMarkers"
-
+import { AboutDialog } from "./AKM/DialogUI"
 
 
 
@@ -79,10 +79,11 @@ function init(container: HTMLElement) {
                     maxZoom: 6,
                     tileSize: 512,
                     bounds: [[-4800, -4800], [4800, 4800]],
-                    attribution: "&copy; 2018-2019 Kedama"
+                    attribution: "&copy; 2018 Kedama-Koiru Monogatari"
                 }
             ),
             overlays: {
+
             }
         },
         {
@@ -100,7 +101,7 @@ function init(container: HTMLElement) {
                     maxZoom: 6,
                     tileSize: 512,
                     bounds: [[-4800, -4800], [4800, 4800]],
-                    attribution: "&copy; 2018-2019 Kedama"
+                    attribution: "Map-Data: &copy; 2018 Kedama-Koiru Monogatari, Map-Page: &copy; 2018 D.W.Carrot &amp; foraphe &amp; paizi"
                 }
             ),
             overlays: {
@@ -116,15 +117,20 @@ function init(container: HTMLElement) {
             crs: {
                 datumZoom: 5
             },
-            baseLayer: new L.TileLayer(
+            baseLayer: new YAKMTileLayer(
                 "https://kedama-map-tiles.jsw3286.eu.org/v3/z{z}/voxelmap/{x},{y}.png",
                 {
+                    metadata: {
+                        url: "https://kedama-map-tiles.jsw3286.eu.org/v3/metadata.json",
+                        style: "voxelmap"
+                    },
                     bounds: [[-4096, -4096], [4096, 4096]],
                     tileSize: 256,
                     minNativeZoom: 1,
                     maxNativeZoom: 5,
                     minZoom: 1,
                     maxZoom: 6,
+                    attribution: "&copy; 2018-2019 <a href=\"https://www.craft.moe\">Kedama-Koiru Monogatari</a>"
                 }
             ),
             overlays: {
@@ -135,8 +141,17 @@ function init(container: HTMLElement) {
         }
     ];
     bindLayer(layersControl, groups);
+
+    let aboutDlg = new AboutDialog({
+        position: "topleft",
+        context: "..."
+    })
+    aboutDlg.addTo(map);
+
     map.setView([0, 0], 0);
-    console.debug(map);
+
+
+    console.log(map);
 }
 
 
