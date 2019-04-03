@@ -6,9 +6,15 @@ tools/NoCrossHair3.zip
 */__pycache__/*
 tools/src/*
 
+
 # visual studio profiles
 *.vs
 
 # too large file
 data/v*.png
 
+
+# source
+src/*
+node_modules/*
+package-lock.json

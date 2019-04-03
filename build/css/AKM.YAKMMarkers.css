@@ -11,3 +11,16 @@
     background-color: #808080;
     margin-left: 20px;
 }
+
+.yakm_data-bref {
+    background-color: #f4f4f4;
+    cursor: pointer;
+}
+
+.yakm_data-bref:hover {
+    background-color: #808080;
+}
+
+.yakm_data-bref > span {
+    margin-left: 8px;
+}

@@ -11,7 +11,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports", "leaflet", "marked", "./Util", "./MarkersControl"], function (require, exports, L, MD, Util_1, MarkersControl_1) {
+define(["require", "exports", "leaflet", "marked", "./Util", "./MarkersControl", "./DialogUI"], function (require, exports, L, MD, Util_1, MarkersControl_1, DialogUI_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     //initial marked
@@ -48,6 +48,76 @@ define(["require", "exports", "leaflet", "marked", "./Util", "./MarkersControl"]
         }
         YAKMMarkersManager.prototype.genPanel = function () {
             var mgr = this;
+            var editUI = new DialogUI_1.EditUI({
+                "x": {
+                    toDom: function (value) {
+                        var e = document.createElement("input");
+                        e.type = "number";
+                        e.value = value;
+                        return e;
+                    },
+                    fromDom: function (e) {
+                        return Number(e.value);
+                    }
+                },
+                "z": {
+                    toDom: function (value) {
+                        var e = document.createElement("input");
+                        e.type = "number";
+                        e.value = value;
+                        return e;
+                    },
+                    fromDom: function (e) {
+                        return Number(e.value);
+                    }
+                },
+                "category": {
+                    toDom: function (value) {
+                        var categories = {};
+                        mgr._ctrl.getAllData().forEach(function (data) {
+                            categories[data.category] = true;
+                        });
+                        var e = DialogUI_1.editableSelect(Object.keys(categories), value);
+                        return e;
+                    },
+                    fromDom: function (e) {
+                        return e.value;
+                    }
+                },
+                "name": {
+                    toDom: function (value) {
+                        var e = document.createElement("input");
+                        e.type = "text";
+                        e.value = value;
+                        return e;
+                    },
+                    fromDom: function (e) {
+                        return e.value;
+                    }
+                },
+                "icon": {
+                    toDom: function (value) {
+                        var e = DialogUI_1.editableSelect(Object.keys(mgr.icons), value);
+                        return e;
+                    },
+                    fromDom: function (e) {
+                        return e.value;
+                    }
+                },
+                "description": {
+                    toDom: function (value) {
+                        var e = document.createElement("textarea");
+                        e.value = value;
+                        return e;
+                    },
+                    fromDom: function (e) {
+                        return e.value;
+                    }
+                },
+            });
+            var searchUI = new DialogUI_1.SingleSearchUI("name", function (data) {
+                return "\n                <div class=\"yakm_data-bref\">\n                    <span>" + data.name + "</span>\n                    <span>" + data.category + "</span>\n                    <span>" + data.x + "," + data.z + "</span>\n                </div>";
+            });
             this._panels = {
                 add: new /** @class */ (function () {
                     function Add() {
@@ -110,7 +180,7 @@ define(["require", "exports", "leaflet", "marked", "./Util", "./MarkersControl"]
                             this.stop(ctrl, map);
                             ctrl.complete();
                             var marker = ev.target;
-                            this.editUI(ctrl.getData(marker), function (newData) {
+                            editUI.open(ctrl.getData(marker), function (newData) {
                                 ctrl.editOne(marker, newData);
                             });
                         };
@@ -122,21 +192,8 @@ define(["require", "exports", "leaflet", "marked", "./Util", "./MarkersControl"]
                         ctrl.getAllMarkers().forEach(function (marker) {
                             marker.off("click", this.callback, this);
                         }, this);
+                        editUI.close();
                         this.callback = undefined;
-                    };
-                    /** @method */
-                    Edit.prototype.editUI = function (oldData, callback) {
-                        var v = JSON.stringify(oldData);
-                        var s = prompt("marker-data", v);
-                        try {
-                            if (s === null || s === v)
-                                return;
-                            var d = JSON.parse(s);
-                            d.timestamp = new Date(d.timestamp);
-                            setTimeout(callback, 200, d);
-                        }
-                        catch (e) {
-                        }
                     };
                     return Edit;
                 }()),
@@ -157,7 +214,7 @@ define(["require", "exports", "leaflet", "marked", "./Util", "./MarkersControl"]
                     Save.prototype.start = function (ctrl, map) {
                         ctrl.complete();
                         var obj = ctrl.saveAll();
-                        mgr.modifyRecords(obj.toAdd, obj.toRemove);
+                        mgr.modifyRecords(obj.toAdd, obj.toRemove, ctrl.getAllData());
                     };
                     Save.prototype.stop = function (ctrl, map) {
                     };
@@ -177,42 +234,42 @@ define(["require", "exports", "leaflet", "marked", "./Util", "./MarkersControl"]
                 search: new /** @class */ (function () {
                     function Search() {
                     }
-                    Search.prototype.searchUI = function (list, ctrl) {
-                        var h = setTimeout(function (list) {
-                            var key = prompt("Search for (name):");
-                            var res = new Array();
-                            var show = "Result is:\n";
-                            if (key) {
-                                list.forEach(function (data) {
-                                    if (data.name.indexOf(key) >= 0) {
-                                        res.push(data);
-                                        show += res.length + ".\t" + data.name + " [" + data.category + "]\n";
-                                    }
-                                });
-                            }
-                            show += "=====================\n";
-                            show += "Select index to jump to:";
-                            var index = Number.parseInt(prompt(show));
-                            if (index > 0 && index <= res.length) {
-                                var data = res[index - 1];
-                                var map = ctrl._map;
-                                map.setView([data.z, data.x], map.getMaxZoom());
-                            }
-                        }, 10, list);
-                        return function () {
-                            clearTimeout(h);
-                            console.debug('>> ', h);
-                        };
-                    };
+                    // searchUI(list: Array<YAKMMarkerData>, ctrl: MarkersControl<YAKMMarkerData>) {
+                    //     let h = setTimeout(function (list: Array<YAKMMarkerData>) {
+                    //         let key = prompt("Search for (name):");
+                    //         let res = new Array<YAKMMarkerData>();
+                    //         let show = "Result is:\n";
+                    //         if (key) {
+                    //             list.forEach(function (data) {
+                    //                 if (data.name.indexOf(key) >= 0) {
+                    //                     res.push(data);
+                    //                     show += `${res.length}.\t${data.name} [${data.category}]\n`;
+                    //                 }
+                    //             });
+                    //         }
+                    //         show += "=====================\n";
+                    //         show += "Select index to jump to:"
+                    //         let index = Number.parseInt(prompt(show));
+                    //         if (index > 0 && index <= res.length) {
+                    //             let data = res[index - 1];
+                    //             let map = (<L.Map>(<any>ctrl)._map);
+                    //             map.setView([data.z, data.x], map.getMaxZoom());
+                    //         }
+                    //     }, 10, list);
+                    //     return function () {
+                    //         clearTimeout(h);
+                    //         console.debug('>> ', h);
+                    //     };
+                    // }
                     Search.prototype.start = function (ctrl, map) {
-                        ctrl.complete();
-                        this._future = this.searchUI(ctrl.getAllData(), ctrl);
+                        searchUI.open(ctrl.getAllData(), function (data) {
+                            map.setView(new L.LatLng(data.z, data.x), map.getMaxZoom());
+                        }, function (event) {
+                            ctrl.complete();
+                        });
                     };
                     Search.prototype.stop = function (ctrl, map) {
-                        if (this._future) {
-                            this._future();
-                            this._future = undefined;
-                        }
+                        searchUI.close();
                     };
                     return Search;
                 }())

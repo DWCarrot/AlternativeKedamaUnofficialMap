@@ -1,4 +1,4 @@
-define(["require", "exports", "leaflet", "./AKM/Util", "./AKM/MarkersControl", "./config", "./AKM/MeasureControl", "./AKM/YAKMMarkers", "./AKM/BasicMarkers"], function (require, exports, L, Util_1, MarkersControl_1, config_1, MeasureControl_1, YAKMMarkers_1, BasicMarkers_1) {
+define(["require", "exports", "leaflet", "./AKM/Util", "./AKM/MarkersControl", "./AKM/YAKMTileLayer", "./config", "./AKM/MeasureControl", "./AKM/YAKMMarkers", "./AKM/BasicMarkers", "./AKM/DialogUI"], function (require, exports, L, Util_1, MarkersControl_1, YAKMTileLayer_1, config_1, MeasureControl_1, YAKMMarkers_1, BasicMarkers_1, DialogUI_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function init(container) {
@@ -61,7 +61,7 @@ define(["require", "exports", "leaflet", "./AKM/Util", "./AKM/MarkersControl", "
                     maxZoom: 6,
                     tileSize: 512,
                     bounds: [[-4800, -4800], [4800, 4800]],
-                    attribution: "&copy; 2018-2019 Kedama"
+                    attribution: "&copy; 2018 Kedama-Koiru Monogatari"
                 }),
                 overlays: {}
             },
@@ -78,7 +78,7 @@ define(["require", "exports", "leaflet", "./AKM/Util", "./AKM/MarkersControl", "
                     maxZoom: 6,
                     tileSize: 512,
                     bounds: [[-4800, -4800], [4800, 4800]],
-                    attribution: "&copy; 2018-2019 Kedama"
+                    attribution: "Map-Data: &copy; 2018 Kedama-Koiru Monogatari, Map-Page: &copy; 2018 D.W.Carrot &amp; foraphe &amp; paizi"
                 }),
                 overlays: {
                     marker: new BasicMarkers_1.BasicMarkersManager(markersControl, {
@@ -93,13 +93,18 @@ define(["require", "exports", "leaflet", "./AKM/Util", "./AKM/MarkersControl", "
                 crs: {
                     datumZoom: 5
                 },
-                baseLayer: new L.TileLayer("https://kedama-map-tiles.jsw3286.eu.org/v3/z{z}/voxelmap/{x},{y}.png", {
+                baseLayer: new YAKMTileLayer_1.YAKMTileLayer("https://kedama-map-tiles.jsw3286.eu.org/v3/z{z}/voxelmap/{x},{y}.png", {
+                    metadata: {
+                        url: "https://kedama-map-tiles.jsw3286.eu.org/v3/metadata.json",
+                        style: "voxelmap"
+                    },
                     bounds: [[-4096, -4096], [4096, 4096]],
                     tileSize: 256,
                     minNativeZoom: 1,
                     maxNativeZoom: 5,
                     minZoom: 1,
                     maxZoom: 6,
+                    attribution: "&copy; 2018-2019 <a href=\"https://www.craft.moe\">Kedama-Koiru Monogatari</a>"
                 }),
                 overlays: {
                     marker: new YAKMMarkers_1.YAKMMarkersManager(markersControl, {
@@ -109,8 +114,13 @@ define(["require", "exports", "leaflet", "./AKM/Util", "./AKM/MarkersControl", "
             }
         ];
         config_1.bindLayer(layersControl, groups);
+        var aboutDlg = new DialogUI_1.AboutDialog({
+            position: "topleft",
+            context: "# About"
+        });
+        aboutDlg.addTo(map);
         map.setView([0, 0], 0);
-        console.debug(map);
+        console.log(map);
     }
     init(document.getElementById("map-container"));
 });
