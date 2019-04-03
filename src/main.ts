@@ -41,9 +41,18 @@
         }
     }
 
+    if (!Object.keys) {
+        Object.keys = function (o: {}) {
+            let a = new Array<string>();
+            for (let k in o)
+                a.push(k);
+            return a;
+        }
+    }
+
     /////////////////////////////////////////////////////////////////////////
 
-    console.debug = () => {};
+    console.debug = () => { };
 
     interface RequireConfigPath {
         url: string,
@@ -194,7 +203,9 @@
                 integrity: "sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             },
             "jqueryui": "https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui",
+            "jquery-editable-select": "lib/jquery-editable-select.min",
             "view/lib/easy-button": "https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button",
+
             "css!leaflet": {
                 url: "https://unpkg.com/leaflet@1.4.0/dist/leaflet",
                 integrity: "sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
@@ -209,6 +220,7 @@
                 integrity: "sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
             },
             "css!jqueryui": "https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui",
+            "css!jquery-editable-select": "lib/jquery-editable-select.min",
             "css!view/lib/easy-button": "https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button"
         },
         waitSeconds: 10
@@ -216,9 +228,10 @@
 
 })(`
 ====================================================================
-    Typescript \u00BB Alternative-KedamaCraft-(Unofficial)-Map
+    Typescript \u00BB Alternative-KedamaCraft-Map (Unofficial)
     \u00A9 2018-2019 KedamaMC Player Statistics & Visualization
 ====================================================================
+
 `);
 
 

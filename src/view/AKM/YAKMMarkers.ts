@@ -1,7 +1,9 @@
 import * as L from "leaflet"
 import * as MD from "marked"
+import * as $ from "jquery"
 import { setOptions, loadStyle, conditionalJoin, getJSON } from "./Util"
 import { MarkerData, MarkersControl, MarkersControlLayer, MarkersControlLayerOptions, MarkersControlPanel, MarkerDataManager } from "./MarkersControl"
+import { EditUI, SingleSearchUI, editableSelect } from "./DialogUI"
 
 //initial marked
 MD.setOptions({
@@ -75,7 +77,82 @@ export class YAKMMarkersManager extends MarkersControlLayer<YAKMMarkerData> {
     }
 
     protected genPanel() {
-        let mgr = <MarkerDataManager<YAKMMarkerData>>this;
+        let mgr = <YAKMMarkersManager>this;
+        let editUI = new EditUI<YAKMMarkerData>({
+            "x": {
+                toDom(value) {
+                    let e = document.createElement("input");
+                    e.type = "number";
+                    e.value = value;
+                    return e;
+                },
+                fromDom(e) {
+                    return Number((<HTMLInputElement>e).value);
+                }
+            },
+            "z": {
+                toDom(value) {
+                    let e = document.createElement("input");
+                    e.type = "number";
+                    e.value = value;
+                    return e;
+                },
+                fromDom(e) {
+                    return Number((<HTMLInputElement>e).value);
+                }
+            },
+            "category": {
+                toDom(value) {
+                    let categories: { [name: string]: boolean } = {};
+                    mgr._ctrl.getAllData().forEach(function (data) {
+                        categories[data.category] = true;
+                    });
+                    let e = editableSelect(Object.keys(categories), value);
+                    return e;
+                },
+                fromDom(e) {
+                    return (<HTMLSelectElement>e).value;
+                }
+            },
+            "name": {
+                toDom(value) {
+                    let e = document.createElement("input");
+                    e.type = "text";
+                    e.value = value;
+                    return e;
+                },
+                fromDom(e) {
+                    return (<HTMLInputElement>e).value;
+                }
+            },
+            "icon": {
+                toDom(value) {
+                    let e = editableSelect(Object.keys(mgr.icons), value);
+                    return e;
+                },
+                fromDom(e) {
+                    return (<HTMLSelectElement>e).value;
+                }
+            },
+            "description": {
+                toDom(value) {
+                    let e = document.createElement("textarea");
+                    e.value = value;
+                    return e;
+                },
+                fromDom(e) {
+                    return (<HTMLTextAreaElement>e).value;
+                }
+            },
+        });
+        let searchUI = new SingleSearchUI<YAKMMarkerData>("name", function(data) {
+            return `
+                <div class="yakm_data-bref">
+                    <span>${data.name}</span>
+                    <span>${data.category}</span>
+                    <span>${data.x},${data.z}</span>
+                </div>`;
+        })
         this._panels = {
             add: new class Add {
                 id: number = 0;
@@ -134,7 +211,7 @@ export class YAKMMarkersManager extends MarkersControlLayer<YAKMMarkerData> {
                         this.stop(ctrl, map);
                         ctrl.complete();
                         let marker = <L.Marker>ev.target;
-                        this.editUI(ctrl.getData(marker), (newData) => {
+                        editUI.open(ctrl.getData(marker), (newData) => {
                             ctrl.editOne(marker, newData);
                         });
                     }
@@ -146,22 +223,23 @@ export class YAKMMarkersManager extends MarkersControlLayer<YAKMMarkerData> {
                     ctrl.getAllMarkers().forEach(function (this: Edit, marker) {
                         marker.off("click", this.callback, this);
                     }, this);
+                    editUI.close();
                     this.callback = undefined;
                 }
-                /** @method */
-                editUI(oldData: YAKMMarkerData, callback: (newData: YAKMMarkerData) => void) {
-                    let v = JSON.stringify(oldData);
-                    let s = prompt("marker-data", v);
-                    try {
-                        if (s === null || s === v)
-                            return;
-                        let d = <YAKMMarkerData0>JSON.parse(s);
-                        (<YAKMMarkerData>d).timestamp = new Date(d.timestamp);
-                        setTimeout(callback, 200, d);
-                    } catch (e) {
+                // /** @method */
+                // editUI(oldData: YAKMMarkerData, callback: (newData: YAKMMarkerData) => void) {
+                //     let v = JSON.stringify(oldData);
+                //     let s = prompt("marker-data", v);
+                //     try {
+                //         if (s === null || s === v)
+                //             return;
+                //         let d = <YAKMMarkerData0>JSON.parse(s);
+                //         (<YAKMMarkerData>d).timestamp = new Date(d.timestamp);
+                //         setTimeout(callback, 200, d);
+                //     } catch (e) {
 
-                    }
-                }
+                //     }
+                // }
             },
 
             revoke: new class Rvk {
@@ -179,7 +257,7 @@ export class YAKMMarkersManager extends MarkersControlLayer<YAKMMarkerData> {
                 start(ctrl: MarkersControl<YAKMMarkerData>, map: L.Map) {
                     ctrl.complete();
                     let obj = ctrl.saveAll();
-                    mgr.modifyRecords(obj.toAdd, obj.toRemove);
+                    mgr.modifyRecords(obj.toAdd, obj.toRemove, ctrl.getAllData());
                 }
                 stop(ctrl: MarkersControl<YAKMMarkerData>, map: L.Map) {
 
@@ -197,43 +275,47 @@ export class YAKMMarkersManager extends MarkersControlLayer<YAKMMarkerData> {
             },
 
             search: new class Search {
-                searchUI(list: Array<YAKMMarkerData>, ctrl: MarkersControl<YAKMMarkerData>) {
-                    let h = setTimeout(function (list: Array<YAKMMarkerData>) {
-                        let key = prompt("Search for (name):");
-                        let res = new Array<YAKMMarkerData>();
-                        let show = "Result is:\n";
-                        if (key) {
-                            list.forEach(function (data) {
-                                if (data.name.indexOf(key) >= 0) {
-                                    res.push(data);
-                                    show += `${res.length}.\t${data.name} [${data.category}]\n`;
-                                }
-                            });
-                        }
-                        show += "=====================\n";
-                        show += "Select index to jump to:"
-                        let index = Number.parseInt(prompt(show));
-                        if (index > 0 && index <= res.length) {
-                            let data = res[index - 1];
-                            let map = (<L.Map>(<any>ctrl)._map);
-                            map.setView([data.z, data.x], map.getMaxZoom());
-                        }
-                    }, 10, list);
-                    return function () {
-                        clearTimeout(h);
-                        console.debug('>> ', h);
-                    };
-                }
-                _future: () => void;
+                // searchUI(list: Array<YAKMMarkerData>, ctrl: MarkersControl<YAKMMarkerData>) {
+                //     let h = setTimeout(function (list: Array<YAKMMarkerData>) {
+                //         let key = prompt("Search for (name):");
+                //         let res = new Array<YAKMMarkerData>();
+                //         let show = "Result is:\n";
+                //         if (key) {
+                //             list.forEach(function (data) {
+                //                 if (data.name.indexOf(key) >= 0) {
+                //                     res.push(data);
+                //                     show += `${res.length}.\t${data.name} [${data.category}]\n`;
+                //                 }
+                //             });
+                //         }
+                //         show += "=====================\n";
+                //         show += "Select index to jump to:"
+                //         let index = Number.parseInt(prompt(show));
+                //         if (index > 0 && index <= res.length) {
+                //             let data = res[index - 1];
+                //             let map = (<L.Map>(<any>ctrl)._map);
+                //             map.setView([data.z, data.x], map.getMaxZoom());
+                //         }
+                //     }, 10, list);
+                //     return function () {
+                //         clearTimeout(h);
+                //         console.debug('>> ', h);
+                //     };
+                // }
+                
                 start(ctrl: MarkersControl<YAKMMarkerData>, map: L.Map) {
-                    ctrl.complete();
-                    this._future = this.searchUI(ctrl.getAllData(), ctrl);
+                    searchUI.open(
+                        ctrl.getAllData(), 
+                        function(data) {
+                            map.setView(new L.LatLng(data.z, data.x), map.getMaxZoom());
+                        },
+                        function(event) {
+                            ctrl.complete();
+                        }
+                    );
                 }
                 stop(ctrl: MarkersControl<YAKMMarkerData>, map: L.Map) {
-                    if (this._future) {
-                        this._future();
-                        this._future = undefined;
-                    }
+                    searchUI.close();
                 }
             }
         }

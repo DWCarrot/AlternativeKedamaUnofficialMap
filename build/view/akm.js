@@ -116,7 +116,7 @@ define(["require", "exports", "leaflet", "./AKM/Util", "./AKM/MarkersControl", "
         config_1.bindLayer(layersControl, groups);
         var aboutDlg = new DialogUI_1.AboutDialog({
             position: "topleft",
-            context: "..."
+            context: "# About"
         });
         aboutDlg.addTo(map);
         map.setView([0, 0], 0);

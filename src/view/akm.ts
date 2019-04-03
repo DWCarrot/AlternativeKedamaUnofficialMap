@@ -144,7 +144,7 @@ function init(container: HTMLElement) {
 
     let aboutDlg = new AboutDialog({
         position: "topleft",
-        context: "..."
+        context: "# About"
     })
     aboutDlg.addTo(map);
 

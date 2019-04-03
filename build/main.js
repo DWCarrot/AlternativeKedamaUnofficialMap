@@ -35,6 +35,14 @@
             return i;
         };
     }
+    if (!Object.keys) {
+        Object.keys = function (o) {
+            var a = new Array();
+            for (var k in o)
+                a.push(k);
+            return a;
+        };
+    }
     /////////////////////////////////////////////////////////////////////////
     console.debug = function () { };
     /**
@@ -161,6 +169,7 @@
                 integrity: "sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             },
             "jqueryui": "https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui",
+            "jquery-editable-select": "lib/jquery-editable-select.min",
             "view/lib/easy-button": "https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button",
             "css!leaflet": {
                 url: "https://unpkg.com/leaflet@1.4.0/dist/leaflet",
@@ -176,9 +185,10 @@
                 integrity: "sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
             },
             "css!jqueryui": "https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui",
+            "css!jquery-editable-select": "lib/jquery-editable-select.min",
             "css!view/lib/easy-button": "https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button"
         },
         waitSeconds: 10
     }, "view/akm");
-})("\n====================================================================\n    Typescript \u00BB Alternative-KedamaCraft-(Unofficial)-Map\n    \u00A9 2018-2019 KedamaMC Player Statistics & Visualization\n====================================================================\n");
+})("\n====================================================================\n    Typescript \u00BB Alternative-KedamaCraft-Map (Unofficial)\n    \u00A9 2018-2019 KedamaMC Player Statistics & Visualization\n====================================================================\n\n");
 //# sourceMappingURL=main.js.map
