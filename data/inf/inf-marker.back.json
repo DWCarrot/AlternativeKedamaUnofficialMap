@@ -1,0 +1,160 @@
+{
+  "icons": {
+    "axe": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/axe.json",
+    "categg": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/categg.json",
+    "creeper": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/creeper.json",
+    "dolphinegg": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/dolphinegg.json",
+    "elytra": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/elytra.json",
+    "emerald": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/emerald.json",
+    "endereye": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/endereye.json",
+    "expbottle": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/expbottle.json",
+    "houses": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/houses.json",
+    "kelp": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/kelp.json",
+    "pickaxe": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/pickaxe.json",
+    "star": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/star.json",
+    "sword": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/sword.json",
+    "toolkit": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/toolkit.json",
+    "train": "https://cdn.jsdelivr.net/gh/wfjsw/kedama-map-assets@ca42c64f2fcbe756446213f2ad6b6865634c6b0e/icons/train.json"
+  },
+  "markers": {
+    "monster": [
+      {
+        "name": "熊大",
+        "x": 1794,
+        "z": 1488,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=64 \\#00fe01"
+      },
+      {
+        "name": "星璇机枪手",
+        "x": -1742,
+        "z": -1639,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=80 \\#06b664"
+      },
+      {
+        "name": "封印精灵",
+        "x": -292,
+        "z": -213,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=68 \\#697077"
+      },
+      {
+        "name": "火星咕噜怪",
+        "x": -17,
+        "z": 397,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=88 \\#5d1ee2"
+      },
+      {
+        "name": "坏兔纸",
+        "x": 1600,
+        "z": 1830,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=71 \\#a9fbf6"
+      },
+      {
+        "name": "咕噜怪",
+        "x": -13,
+        "z": 390,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=88 \\#e423d0"
+      },
+      {
+        "name": "火之精灵",
+        "x": 631,
+        "z": -72,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=71 \\#9f3a98"
+      }
+    ],
+    "landmark": [
+      {
+        "name": "上野神社",
+        "x": -1481,
+        "z": -288,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=78 \\#79620d"
+      },
+      {
+        "name": "村庄",
+        "x": -1836,
+        "z": 14,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=76 \\#a6df0e"
+      },
+      {
+        "name": "村庄",
+        "x": 1206,
+        "z": 306,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=65 \\#3cfae2"
+      },
+      {
+        "name": "海底神殿",
+        "x": 1631,
+        "z": -2016,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=56 \\#ca361f"
+      },
+      {
+        "name": "村庄",
+        "x": 678,
+        "z": -334,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=69 \\#d4da21"
+      },
+      {
+        "name": "远东沙漠",
+        "x": 1575,
+        "z": -110,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=72 \\#ac7e87"
+      },
+      {
+        "name": "花",
+        "x": -413,
+        "z": -1490,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=72 \\#148468"
+      },
+      {
+        "name": "丛林",
+        "x": -2044,
+        "z": -1518,
+        "uploader": 4,
+        "timestamp": "2019-04-29T12:00:00.000Z",
+        "icon": "star",
+        "description": "y=84 \\#e4d213"
+      }
+    ]
+  }
+}
