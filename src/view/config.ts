@@ -10,9 +10,26 @@ export interface MapLayerConfig {
     overlays: { [name: string]: L.Layer }
 }
 
+export interface KeyValue {
+    [key:string]:string
+}
+
+export function getQuery() {
+    let query: KeyValue = {};
+    let s = location.search;
+    if(s[0] == '?') {
+        s.slice(1, s.length).split('&').forEach((part)=>{
+            let kv = part.split('=');
+            query[kv[0]] = kv[1];
+        })
+    }
+    return query;
+}
+
 export function bindLayer(layerCtrl: L.Control.Layers, cfgs: Array<MapLayerConfig>) {
     let map = <L.Map>((<any>layerCtrl)._map);   // layer control has propriety `_map`
     let defaultLayer:L.GridLayer;
+    let defaultName = getQuery()["world"];
     cfgs.forEach(function(cfg) {
         cfg.baseLayer.on("add", function (event) {
             let overlays = cfg.overlays;
@@ -35,8 +52,14 @@ export function bindLayer(layerCtrl: L.Control.Layers, cfgs: Array<MapLayerConfi
                 } 
             }, 1);
         });
-        if(cfg.default) {
-            defaultLayer = cfg.baseLayer;
+        if(defaultName) {
+            if(cfg.name == defaultName) {
+                defaultLayer = cfg.baseLayer;
+            }
+        } else {
+            if(cfg.default) {
+                defaultLayer = cfg.baseLayer;
+            }
         }
         layerCtrl.addBaseLayer(cfg.baseLayer, cfg.name);
     });

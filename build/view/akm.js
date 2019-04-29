@@ -111,6 +111,27 @@ define(["require", "exports", "leaflet", "./AKM/Util", "./AKM/MarkersControl", "
                         url: "https://kedama-map-markers.jsw3286.eu.org/getMarkers?map=v3"
                     }),
                 }
+            },
+            {
+                name: "inf",
+                default: false,
+                crs: {
+                    datumZoom: 5
+                },
+                baseLayer: new L.TileLayer("../data/inf/{z}/{x},{y}.png", {
+                    minNativeZoom: 0,
+                    maxNativeZoom: 4,
+                    minZoom: 0,
+                    maxZoom: 5,
+                    tileSize: 256,
+                    bounds: [[-2048, -2048], [2048, 2048]],
+                    attribution: "&copy; 2019 Kedama-Koiru Monogatari"
+                }),
+                overlays: {
+                    marker: new YAKMMarkers_1.YAKMMarkersManager(markersControl, {
+                        url: "https://jsonblob.com/api/jsonblob/524a7782-1c64-11e9-8abb-abccc3aba292"
+                    }),
+                }
             }
         ];
         config_1.bindLayer(layersControl, groups);

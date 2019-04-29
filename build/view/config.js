@@ -1,9 +1,22 @@
 define(["require", "exports", "./AKM/MinecraftCRS"], function (require, exports, MinecraftCRS_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    function getQuery() {
+        var query = {};
+        var s = location.search;
+        if (s[0] == '?') {
+            s.slice(1, s.length).split('&').forEach(function (part) {
+                var kv = part.split('=');
+                query[kv[0]] = kv[1];
+            });
+        }
+        return query;
+    }
+    exports.getQuery = getQuery;
     function bindLayer(layerCtrl, cfgs) {
         var map = (layerCtrl._map); // layer control has propriety `_map`
         var defaultLayer;
+        var defaultName = getQuery()["world"];
         cfgs.forEach(function (cfg) {
             cfg.baseLayer.on("add", function (event) {
                 var overlays = cfg.overlays;
@@ -26,8 +39,15 @@ define(["require", "exports", "./AKM/MinecraftCRS"], function (require, exports,
                     }
                 }, 1);
             });
-            if (cfg.default) {
-                defaultLayer = cfg.baseLayer;
+            if (defaultName) {
+                if (cfg.name == defaultName) {
+                    defaultLayer = cfg.baseLayer;
+                }
+            }
+            else {
+                if (cfg.default) {
+                    defaultLayer = cfg.baseLayer;
+                }
             }
             layerCtrl.addBaseLayer(cfg.baseLayer, cfg.name);
         });
