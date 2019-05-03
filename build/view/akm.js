@@ -120,9 +120,9 @@ define(["require", "exports", "leaflet", "./AKM/Util", "./AKM/MarkersControl", "
                 },
                 baseLayer: new L.TileLayer("../data/inf/{z}/{x},{y}.png", {
                     minNativeZoom: 0,
-                    maxNativeZoom: 4,
+                    maxNativeZoom: 5,
                     minZoom: 0,
-                    maxZoom: 5,
+                    maxZoom: 6,
                     tileSize: 256,
                     bounds: [[-2048, -2048], [2048, 2048]],
                     attribution: "&copy; 2019 Kedama-Koiru Monogatari"
